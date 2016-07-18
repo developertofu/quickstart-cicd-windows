@@ -488,13 +488,13 @@
                ]
              ]
            }
-         },
-         "CreationPolicy": {
-            "ResourceSignal": {
-               "Count": "1",
-               "Timeout": "PT75M"
-            }
          }
+      },
+      "CreationPolicy": {
+        "ResourceSignal": {
+          "Count": "1",
+          "Timeout": "PT75M"
+        }
       }
     },
     "BuildServerInstanceCore" : {
@@ -596,13 +596,13 @@
                ]
              ]
            }
-         },
-         "CreationPolicy": {
-            "ResourceSignal": {
-               "Count": "1",
-               "Timeout": "PT75M"
-            }
          }
+      },
+      "CreationPolicy": {
+        "ResourceSignal": {
+          "Count": "1",
+          "Timeout": "PT75M"
+        }
       }
     },
     "CodeDeployServerInstance" : {
@@ -709,13 +709,13 @@
                ]
              ]
            }
-         },
-         "CreationPolicy": {
-            "ResourceSignal": {
-               "Count": "1",
-               "Timeout": "PT75M"
-            }
-         }
+         }        
+      },
+      "CreationPolicy": {
+        "ResourceSignal": {
+          "Count": "1",
+          "Timeout": "PT75M"
+        }
       }
     },
     "CodeDeployServerInstance2" : {
@@ -823,13 +823,13 @@
                ]
              ]
            }
-         },
-         "CreationPolicy": {
-            "ResourceSignal": {
-               "Count": "1",
-               "Timeout": "PT75M"
-            }
          }
+      },
+      "CreationPolicy": {
+        "ResourceSignal": {
+          "Count": "1",
+          "Timeout": "PT75M"
+        }
       }
     },
     "CodeDeployTestingELB": {
