@@ -6,7 +6,7 @@
       "Description": "Name of an existing EC2 KeyPair to enable SSH access to the instances",
       "Type": "AWS::EC2::KeyPair::KeyName"
     },
-    "DemoApp-DBUserName": {
+    "DemoAppDBUserName": {
       "Default": "awsuser",
       "Description" : "The database admin account username",
       "Type": "String",
@@ -15,7 +15,7 @@
       "AllowedPattern" : "[a-zA-Z][a-zA-Z0-9]*",
       "ConstraintDescription" : "must begin with a letter and contain only alphanumeric characters."
     },
-    "DemoApp-DBPassword": {
+    "DemoAppDBPassword": {
       "NoEcho": "true",
       "Description" : "The database admin account password",
       "Type": "String",
@@ -23,22 +23,16 @@
       "MaxLength": "41",
       "ConstraintDescription" : "Minimum of 8 characters"
     },
-    "DemoApp-Include": {
+    "DemoAppInclude": {
       "AllowedValues": ["yes","no"],
       "Default": "yes",
       "Description": "To include a demo application that will be used to build and deploy for testing.",
       "Type": "String"
     },
-    "NumberOfCodeDeployServers": {
+    "CodeDeployNumberOfServers": {
       "AllowedValues": ["1","2"],
       "Default": "1",
       "Description": "Choose how many test servers you want to deploy with CodeDeploy.",
-      "Type": "String"
-    },
-    "IncludeELBForTesting": {
-      "AllowedValues": ["yes","no"],
-      "Default": "no",
-      "Description": "To include an ELB with multiplle CodeDeploy test servers choose yes.",
       "Type": "String"
     },
     "VPC": {
@@ -67,9 +61,9 @@
     },
     "RDGWSecurityGroup":{
       "Description": "ID of the security group for remote access gateways that can access the build server and code deploy servers",
-      "Type": "AWS::EC2::SecurityGroup"
+      "Type": "AWS::EC2::SecurityGroup::Id"
     },
-    "CodeDeploy-BucketName": {
+    "CodeDeployBucketName": {
       "Description": "Unique DNS name for an S3 bucket to build and deploy your code from.",
       "Type": "String",
       "MinLength": "1",
@@ -77,29 +71,29 @@
       "AllowedPattern": "[-a-z0-9]*",
       "ConstraintDescription": "can contain only alphanumeric lower case characters and dashes."
     },
-    "CodeDeploy-AppName": {
+    "CodeDeployAppName": {
       "Description": "Application name that will be used by CodeDeploy.",
       "Default" : "DemoApp",
       "Type": "String",
       "MinLength": "1",
       "MaxLength": "100",
-      "AllowedPattern": "[-_a-z0-9]*",
+      "AllowedPattern": "[-_a-zA-Z0-9]*",
       "ConstraintDescription": "can contain only alphanumeric lower case characters, dashes, and underscores."
     },
-    "CodeDeploy-DeploymentGroupName": {
+    "CodeDeployDeploymentGroupName": {
       "Description": "DeploymentGroup name that will be used by CodeDeploy.",
       "Default" : "DemoApp-DG",
       "Type": "String",
       "MinLength": "1",
       "MaxLength": "100",
-      "AllowedPattern": "[-_a-z0-9]*",
+      "AllowedPattern": "[-_a-zA-Z0-9]*",
       "ConstraintDescription": "can contain only alphanumeric lower case characters, dashes, and underscores."
-    },
+    }
   },
   "Conditions" :{
-    "DeployDemoApp" : { "Fn::Equals" : [ { "Ref" : "DemoApp-Include" }, "yes" ] },
-    "DemoAppNotIncluded" : { "Fn::Equals" : [ { "Ref" : "DemoApp-Include" }, "no" ] },
-    "CreateMultipleCodeDeployServers" : { "Fn::Equals" : [ { "Ref" : "NumberOfCodeDeployServers" }, "2" ] }
+    "DeployDemoApp" : { "Fn::Equals" : [ { "Ref" : "DemoAppInclude" }, "yes" ] },
+    "DemoAppNotIncluded" : { "Fn::Equals" : [ { "Ref" : "DemoAppInclude" }, "no" ] },
+    "CreateMultipleCodeDeployServers" : { "Fn::Equals" : [ { "Ref" : "CodeDeployNumberOfServers" }, "2" ] }
   },
   "Mappings": {
     "AWSAMIRegionMap": {
@@ -147,10 +141,7 @@
       "Condition" : "DeployDemoApp",
       "Properties" : {
         "GroupDescription" : "Security group for Quickstart RDS DB Instance",
-        "DBSecurityGroupIngress" : {
-            "CIDRIP" : { "Ref" : "VPCCIDR"}
-            }
-        },
+        "DBSecurityGroupIngress" : {"CIDRIP" : { "Ref" : "VPCCIDR"}},
         "EC2VpcId" : { "Ref" : "VPC" }
       }
     },
@@ -171,19 +162,72 @@
         "Engine" : "sqlserver-web",
         "EngineVersion" : "12.00.4422.0.v1",
         "MultiAZ" : "false",
-        "MasterUsername" : { "Ref" : "DBUsername" } ,
-        "MasterUserPassword" : { "Ref" : "DBPassword" },
+        "MasterUsername" : { "Ref" : "DemoAppDBUserName" } ,
+        "MasterUserPassword" : { "Ref" : "DemoAppDBPassword" },
         "DBSubnetGroupName" : { "Ref" : "MyDBSubnetGroup" },
         "DBSecurityGroups" : [ { "Ref" : "MyDBSecurityGroup" } ]
       }
-   },
-  "CodeDeployBucket" : {
-    "Type" : "AWS::S3::Bucket",
+    },
+    "CodeDeployBucket" : {
+      "Type" : "AWS::S3::Bucket",
+      "Properties": {
+        "BucketName": { "Ref" : "CodeDeployBucketName" }
+      }
+    },
+    "BuildServerSecurityGroup": {
+      "Type": "AWS::EC2::SecurityGroup",
+      "Properties": {
+        "VpcId": {
+          "Ref": "VPC"
+        },
+        "GroupDescription": "Enable RDP access via port 3389",
+        "SecurityGroupIngress": [
+          {
+            "IpProtocol": "tcp",
+            "FromPort": "3389",
+            "ToPort": "3389",
+            "SourceSecurityGroupId": { "Ref" : "RDGWSecurityGroup" }
+          }
+        ]
+      }
+    },
+    "CodeDeployServerSecurityGroup": {
+      "Type": "AWS::EC2::SecurityGroup",
+      "Properties": {
+        "VpcId": {"Ref": "VPC"},
+        "GroupDescription": "Enable RDP access via port 3389 and port 80 for web site access",
+        "SecurityGroupIngress": [
+          {
+            "IpProtocol": "tcp",
+            "FromPort": "3389",
+            "ToPort": "3389",
+            "SourceSecurityGroupId": { "Ref" : "RDGWSecurityGroup" }
+          },
+          {
+            "IpProtocol": "tcp",
+            "FromPort": "80",
+            "ToPort": "80",
+            "SourceSecurityGroupId": { "Ref" : "CodeDeployELBSG" }
+          }
+        ]
+      }
+    },
+    "CodeDeployELBSG": {
+    "Type": "AWS::EC2::SecurityGroup",
     "Properties": {
-      "BucketName": { "Ref" : "CodeDeployBucketName" }
-    }   
-  }, 
-  "BuildServerRole": {
+       "GroupDescription": "Security Group for SharePoint ELB",
+       "VpcId": {"Ref": "VPC"},
+       "SecurityGroupIngress": [
+          {
+             "IpProtocol": "tcp",
+             "FromPort": "80",
+             "ToPort": "80",
+             "CidrIp": "0.0.0.0/0"
+          }
+        ]
+      }
+    },
+    "BuildServerRole": {
       "Type": "AWS::IAM::Role",
       "Properties": {
         "AssumeRolePolicyDocument": {
@@ -240,7 +284,7 @@
         ]
       }
     },
-   "CodeDeployServerRole": {
+    "CodeDeployServerRole": {
       "Type": "AWS::IAM::Role",
       "Properties": {
         "AssumeRolePolicyDocument": {
@@ -251,14 +295,7 @@
               "Principal": {
                 "Service": [
                   "ec2.amazonaws.com",
-                  "Fn::Join": [
-                    "",
-                    [
-                      "codedeploy.",
-                      { "Ref" : "AWS::Region" },
-                      "amazonaws.com"
-                    ]
-                  ]
+                  {"Fn::Join":["",["codedeploy.",{ "Ref":"AWS::Region" },".amazonaws.com"]]}
                 ]
               },
               "Action": [
@@ -278,7 +315,7 @@
                   "Effect": "Allow",
                   "Action": "codedeploy:*",
                   "Resource": [
-                    { "Fn::Join" : ["", ["arn:aws:codedeploy:",{ "Ref" : "AWS::Region" },":",{ "Ref" : "AWS::AccountID" },":application:", { "Ref" : "CodeDeploy-AppName" }  ]  ] }
+                    { "Fn::Join" : ["", ["arn:aws:codedeploy:",{ "Ref" : "AWS::Region" },":",{ "Ref" : "AWS::AccountId" },":application:", { "Ref" : "CodeDeployAppName" }  ]  ] }
                   ]
                 },
                 {
@@ -311,46 +348,6 @@
         ]
       }
     },
-    "BuildServerSecurityGroup": {
-      "Type": "AWS::EC2::SecurityGroup",
-      "Properties": {
-        "VpcId": {
-          "Ref": "VPC"
-        },
-        "GroupDescription": "Enable RDP access via port 3389",
-        "SecurityGroupIngress": [
-          {
-            "IpProtocol": "tcp",
-            "FromPort": "3389",
-            "ToPort": "3389",
-            "SourceSecurityGroupId": { "Ref" : "RDGWSecurityGroup" }
-          }
-        ]
-      }
-    },
-    "CodeDeployServerSecurityGroup": {
-      "Type": "AWS::EC2::SecurityGroup",
-      "Properties": {
-        "VpcId": {
-          "Ref": "VPC"
-        },
-        "GroupDescription": "Enable RDP access via port 3389 and port 80 for web site access",
-        "SecurityGroupIngress": [
-          {
-            "IpProtocol": "tcp",
-            "FromPort": "3389",
-            "ToPort": "3389",
-            "SourceSecurityGroupId": { "Ref" : "RDGWSecurityGroup" }
-          },
-          {
-            "IpProtocol": "tcp",
-            "FromPort": "80",
-            "ToPort": "80",
-            "CidrIp": "0.0.0.0/0"
-          }
-        ]
-      }
-    },
     "BuildServerInstanceWithDemoAppInstalled" : {
       "Type" : "AWS::EC2::Instance",
       "Condition" : "DeployDemoApp",
@@ -368,6 +365,12 @@
               "c:\\cfn\\scripts\\Download-File.ps1": {
                 "source": "https://s3.amazonaws.com/quickstart-reference/microsoft/sharepoint/latest/microsoft-utilities/scripts/Download-File.ps1"
               },
+              "c:\\cfn\\scripts\\Install-MSBuild.ps1": {
+                "source": "https://s3.amazonaws.com/tomfullershare/Install-MSBuild.ps1"
+              },
+              "c:\\cfn\\scripts\\Run-InitialBuild.ps1": {
+                "source": "https://s3.amazonaws.com/tomfullershare/Run-InitialBuild.ps1"
+              }
             },
             "commands": {
               "a-set-execution-policy": {
@@ -432,7 +435,7 @@
                 "waitAfterCompletion": "0"
               },
               "h-install-msbuild": {
-                "command": "C:\\cfn\\downloads\\BuildTools_Full.exe /q /l C:\\Projects\\BuildTools-Install-Log.txt",
+                "command": "powershell.exe -Command \"C:\\cfn\\Scripts\\Install-MSBuild.ps1\"",
                 "waitAfterCompletion": 0
               },
               "i-run-initial-build": {
@@ -440,11 +443,11 @@
                   "Fn::Join":[
                     "",
                     [
-                      "\"C:\\Program Files (x86)\\MSBuild\\14.0\\Bin\\MSBuild.exe\"",
+                      "powershell.exe -Command \"C:\\cfn\\scripts\\Run-InitialBuild.ps1 -BuildFilePath '",
                       " C:\\Projects\\WindowsCodeDeployDemo\\SoccerTeamWeb\\SoccerTeamWeb.csproj",
-                      " /p:BucketName=",
+                      "' -BucketName '",
                       {"Ref" : "CodeDeployBucket"},
-                      " /t:Build;Deploy"
+                      "'\""
                     ]
                   ]
                 },
@@ -497,7 +500,6 @@
     "BuildServerInstanceCore" : {
       "Type" : "AWS::EC2::Instance",
       "Condition" : "DemoAppNotIncluded",
-      "DependsOn" : "CodeDeployBucket",
       "Metadata": {
         "AWS::CloudFormation::Init": {
           "config": {
@@ -511,6 +513,9 @@
               "c:\\cfn\\scripts\\Download-File.ps1": {
                 "source": "https://s3.amazonaws.com/quickstart-reference/microsoft/sharepoint/latest/microsoft-utilities/scripts/Download-File.ps1"
               },
+              "c:\\cfn\\scripts\\Install-MSBuild.ps1":{
+                "source": "https://s3.amazonaws.com/tomfullershare/Install-MSBuild.ps1"
+              }
             },
             "commands": {
               "a-set-execution-policy": {
@@ -553,10 +558,10 @@
                  "waitAfterCompletion": "0"
               },
               "e-install-msbuild": {
-                "command": "C:\\cfn\\downloads\\BuildTools_Full.exe /q /l C:\\Projects\\BuildTools-Install-Log.txt",
+                "command": "powershell.exe -Command \"C:\\cfn\\Scripts\\Install-MSBuild.ps1\"",
                 "waitAfterCompletion": 0
               },              
-              "h-signal-success": {
+              "f-signal-success": {
                 "command": "powershell.exe -Command \"Write-AWSQuickStartStatus\"",
                 "waitAfterCompletion": 0
               }
@@ -602,7 +607,6 @@
     },
     "CodeDeployServerInstance" : {
       "Type" : "AWS::EC2::Instance",
-      "DependsOn" : "InternetGateway",
       "Metadata": {
         "AWS::CloudFormation::Init": {
           "config": {
@@ -616,6 +620,9 @@
               "c:\\cfn\\scripts\\Download-File.ps1": {
                 "source": "https://s3.amazonaws.com/quickstart-reference/microsoft/sharepoint/latest/microsoft-utilities/scripts/Download-File.ps1"
               },
+              "c:\\cfn\\scripts\\Install-CodeDeploy.ps1": {
+                "source": "https://s3.amazonaws.com/tomfullershare/Install-CodeDeploy.ps1"
+              }
             }, 
             "commands": {
               "a-set-execution-policy": {
@@ -664,21 +671,12 @@
                  "waitAfterCompletion": "0"
               },
               "f-install-code-deploy-agent": {
-                "command": "C:\\cfn\\downloads\\codedeploy-agent.msi /quiet /l C:\\cfn\\log\\host-agent-install-log.txt",
-                "ignoreErrors": "true",
-                "waitAfterCompletion": 0
+                "command": "powershell.exe -Command \"C:\\cfn\\scripts\\Install-CodeDeploy.ps1\"",
+                "waitAfterCompletion": "forever"
               },
               "g-signal-success": {
                 "command": "powershell.exe -Command \"Write-AWSQuickStartStatus\"",
-                "waitAfterCompletion": 0
-              }
-            },
-            "services": {
-              "windows": {
-                "codedeployagent": {
-                  "enabled": "true",
-                  "ensureRunning": "true"
-                }
+                "waitAfterCompletion": "0"
               }
             }
           }
@@ -689,9 +687,9 @@
         "SecurityGroupIds" : [{"Ref": "CodeDeployServerSecurityGroup"} ],
         "ImageId" : { "Fn::FindInMap" : [ "AWSAMIRegionMap", { "Ref" : "AWS::Region" }, "WS2012R2" ]},
         "IamInstanceProfile": {"Ref":"CodeDeployTargetServerProfile"},
-        "SubnetId": {"Ref":"PublicSubnetA"},
-        "KeyName": {"Ref": "KeyName"},
-        "Tags" : [ { "Key" : "Name", "Value" : "QuickStart-CodeDeployServer1" }],
+        "SubnetId": {"Ref":"PublicSubnet1"},
+        "KeyName": {"Ref": "KeyPairName"},
+        "Tags" : [ { "Key" : "Name", "Value" : "QuickStart-CodeDeployServer" }],
         "UserData": {
           "Fn::Base64": {
             "Fn::Join": [ "",
@@ -701,7 +699,7 @@
                  {
                    "Ref": "AWS::StackId"
                  },
-                 " -r QuickStart-BuildServer1",
+                 " -r QuickStart-CodeDeployServer",
                  " --region ",
                  {
                    "Ref": "AWS::Region"
@@ -720,19 +718,149 @@
          }
       }
     },
+    "CodeDeployServerInstance2" : {
+      "Type" : "AWS::EC2::Instance",
+      "Condition" : "CreateMultipleCodeDeployServers",
+      "Metadata": {
+        "AWS::CloudFormation::Init": {
+          "config": {
+            "files": {
+              "C:\\cfn\\scripts\\Unzip-Archive.ps1": {
+                "source": "https://s3.amazonaws.com/quickstart-reference/microsoft/sharepoint/latest/microsoft-utilities/scripts/Unzip-Archive.ps1"
+              },
+              "C:\\cfn\\modules\\AWSQuickStart.zip": {
+                "source": "https://s3.amazonaws.com/quickstart-reference/microsoft/sharepoint/latest/microsoft-utilities/modules/AWSQuickStart.zip"
+              },
+              "c:\\cfn\\scripts\\Download-File.ps1": {
+                "source": "https://s3.amazonaws.com/quickstart-reference/microsoft/sharepoint/latest/microsoft-utilities/scripts/Download-File.ps1"
+              },
+              "c:\\cfn\\scripts\\Install-CodeDeploy.ps1": {
+                "source": "https://s3.amazonaws.com/tomfullershare/Install-CodeDeploy.ps1"
+              }
+            }, 
+            "commands": {
+              "a-set-execution-policy": {
+                 "command": "powershell.exe -Command \"Set-ExecutionPolicy RemoteSigned -Force\"",
+                 "waitAfterCompletion": "0"
+              },
+              "b-unpack-quickstart-module": {
+                  "command": "powershell.exe -Command C:\\cfn\\scripts\\Unzip-Archive.ps1 -Source C:\\cfn\\modules\\AWSQuickStart.zip -Destination C:\\Windows\\system32\\WindowsPowerShell\\v1.0\\Modules\\",
+                  "waitAfterCompletion": "0"
+              },
+              "c-init-quickstart-module": {
+                  "command": {
+                    "Fn::Join": ["",
+                       [
+                         "powershell.exe -Command \"",
+                         "New-AWSQuickStartResourceSignal -Stack '",
+                         {
+                            "Ref": "AWS::StackName"
+                         },
+                            "' -Resource 'QuickStart-CodeDeployServer2' -Region '",
+                         {
+                            "Ref": "AWS::Region"
+                         },
+                         "'\""
+                       ]
+                    ]
+                  },
+                  "waitAfterCompletion": "0"
+              },
+              "d-install-iis-aspnet-45": {
+                "command": {
+                  "Fn::Join": ["", ["powershell.exe -Command Install-WindowsFeature Web-Server,Web-Asp-Net45 -IncludeManagementTools"] ]
+                },
+                "waitAfterCompletion": "forever"
+              },
+              "e-download-code-deploy-agent": {
+                 "command": {
+                    "Fn::Join": ["",
+                      [
+                        "powershell.exe -Command \"C:\\cfn\\scripts\\Download-File.ps1 -Source '",
+                        "https://s3.amazonaws.com/aws-codedeploy-us-east-1/latest/codedeploy-agent.msi",
+                         "' -Destination 'C:\\cfn\\downloads\\codedeploy-agent.msi'\""
+                      ]
+                   ]
+                 },
+                 "waitAfterCompletion": "0"
+              },
+              "f-install-code-deploy-agent": {
+                "command": "powershell.exe -Command \"C:\\cfn\\scripts\\Install-CodeDeploy.ps1\"",
+                "waitAfterCompletion": "forever"
+              },
+              "g-signal-success": {
+                "command": "powershell.exe -Command \"Write-AWSQuickStartStatus\"",
+                "waitAfterCompletion": "0"
+              }
+            }
+          }
+        }
+      },
+      "Properties" : {
+        "InstanceType" : "t2.medium",
+        "SecurityGroupIds" : [{"Ref": "CodeDeployServerSecurityGroup"} ],
+        "ImageId" : { "Fn::FindInMap" : [ "AWSAMIRegionMap", { "Ref" : "AWS::Region" }, "WS2012R2" ]},
+        "IamInstanceProfile": {"Ref":"CodeDeployTargetServerProfile"},
+        "SubnetId": {"Ref":"PublicSubnet2"},
+        "KeyName": {"Ref": "KeyPairName"},
+        "Tags" : [ { "Key" : "Name", "Value" : "QuickStart-CodeDeployServer" }],
+        "UserData": {
+          "Fn::Base64": {
+            "Fn::Join": [ "",
+               [
+                 "<script>\n",
+                 "cfn-init.exe -v -c config -s ",
+                 {
+                   "Ref": "AWS::StackId"
+                 },
+                 " -r QuickStart-CodeDeployServer2",
+                 " --region ",
+                 {
+                   "Ref": "AWS::Region"
+                 },
+                 "\n",
+                 "</script>\n"
+               ]
+             ]
+           }
+         },
+         "CreationPolicy": {
+            "ResourceSignal": {
+               "Count": "1",
+               "Timeout": "PT75M"
+            }
+         }
+      }
+    },
+    "CodeDeployTestingELB": {
+      "Type": "AWS::ElasticLoadBalancing::LoadBalancer",
+      "Properties": {
+        "Subnets": [{"Ref":"PublicSubnet1"},{"Ref":"PublicSubnet2"}],
+        "Scheme": "internet-facing",
+        "Instances": {"Fn::If" : [
+            "CreateMultipleCodeDeployServers",
+            [{"Ref": "CodeDeployServerInstance"},{"Ref": "CodeDeployServerInstance2"}],
+            [{"Ref": "CodeDeployServerInstance"}]
+          ]
+        },
+        "Listeners": [{"LoadBalancerPort": "80","InstancePort": "80","Protocol": "TCP"}],
+        "SecurityGroups": [{"Ref": "CodeDeployELBSG"}],
+        "HealthCheck": {"Target": "TCP:80","HealthyThreshold": "3","UnhealthyThreshold": "5","Interval": "10","Timeout": "5"}
+      }
+    },
     "MyApplication" : {
       "Type" : "AWS::CodeDeploy::Application",
       "Properties" : {
-        "ApplicationName" : { "Ref" : "CodeDeploy-AppName" } 
+        "ApplicationName" : { "Ref" : "CodeDeployAppName" } 
       }
     },
     "MyDeploymentGroup" : {
       "Type" : "AWS::CodeDeploy::DeploymentGroup",
       "DependsOn" : "CodeDeployServerInstance",
       "Properties" : {
-        "ApplicationName" : {"Ref" : "CodeDeploy-AppName"},
+        "ApplicationName" : {"Ref" : "CodeDeployAppName"},
         "DeploymentConfigName" : "CodeDeployDefault.AllAtOnce",
-        "DeploymentGroupName" : { "Ref" : "CodeDeploy-DeploymentGroupName" }, 
+        "DeploymentGroupName" : { "Ref" : "CodeDeployDeploymentGroupName" }, 
         "Ec2TagFilters" : [{
           "Key" : "Name",
           "Value" : "QuickStart-CodeDeployServer",
@@ -740,15 +868,16 @@
         }],
         "ServiceRoleArn" : {"Fn::GetAtt":["CodeDeployServerRole","Arn"]}
       }
-    },
-    "WaitHandle": {
-      "Type": "AWS::CloudFormation::WaitConditionHandle"
-    }
+    }       
   },
   "Outputs": {
     "S3Bucket" : {
       "Value" : {"Ref":"CodeDeployBucket"},
-      "Description" : "S3 Bucket where the code is deployed from"
+      "Description" : "S3 Bucket where the code is deployed from."
+    },
+    "ELBDNSName" : {
+      "Value" : {"Fn::GetAtt" : [ "CodeDeployTestingELB", "DNSName" ]},
+      "Description" : "Address of the Elastic Load Balancer for accessing a web service deployed to the Code Deploy servers."
     }
   }
 }
