@@ -221,7 +221,7 @@
           "RDGWCIDR": {
             "Ref": "RDGWCIDR"
           },
-          "VPC": {
+          "VPCID": {
             "Fn::GetAtt": [
               "VPCStack",
               "Outputs.VPCID"
@@ -263,25 +263,25 @@
               "Outputs.VPCCIDR"
             ]
           }, 
-          "PublicSubnet1ID":{
+          "PublicSubnet1":{
             "Fn::GetAtt": [
               "VPCStack",
               "Outputs.PublicSubnet1ID"
             ]
           },
-          "PublicSubnet2ID":{
+          "PublicSubnet2":{
             "Fn::GetAtt": [
               "VPCStack",
               "Outputs.PublicSubnet2ID"
             ]
           },
-          "PrivateSubnet1ID":{
+          "PrivateSubnet1":{
             "Fn::GetAtt": [
               "VPCStack",
               "Outputs.PrivateSubnet1AID"
             ]
           },
-          "PrivateSubnet2ID":{
+          "PrivateSubnet2":{
             "Fn::GetAtt": [
               "VPCStack",
               "Outputs.PrivateSubnet2AID"
