@@ -246,7 +246,7 @@
       "Type": "AWS::CloudFormation::Stack",
       "DependsOn": "RDGWStack",
       "Properties": {
-        "TemplateURL": "https://s3.amazonaws.com/tomfullershare/quistart-aws-codedeploy-windows.template",
+        "TemplateURL": "https://s3.amazonaws.com/tomfullershare/quickstart-aws-codedeploy-windows.template",
         "Parameters": {
           "KeyPairName": {
             "Ref": "KeyPairName"
