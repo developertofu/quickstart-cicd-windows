@@ -474,11 +474,11 @@
             "Fn::Join": [ "",
                [
                  "<script>\n",
-                 "cfn-init.exe -v -c config -s ",
+                 "cfn-init.exe -v -s ",
                  {
                    "Ref": "AWS::StackId"
                  },
-                 " -r QuickStart-BuildServer",
+                 " -r BuildServerInstanceWithDemoAppInstalled",
                  " --region ",
                  {
                    "Ref": "AWS::Region"
@@ -515,6 +515,9 @@
               },
               "c:\\cfn\\scripts\\Install-MSBuild.ps1":{
                 "source": "https://s3.amazonaws.com/tomfullershare/Install-MSBuild.ps1"
+              },
+              "c:\\cfn\\scripts\\Run-InitialBuild.ps1": {
+                "source": "https://s3.amazonaws.com/tomfullershare/Run-InitialBuild.ps1"
               }
             },
             "commands": {
@@ -582,11 +585,11 @@
             "Fn::Join": [ "",
                [
                  "<script>\n",
-                 "cfn-init.exe -v -c config -s ",
+                 "cfn-init.exe -v -s ",
                  {
                    "Ref": "AWS::StackId"
                  },
-                 " -r QuickStart-BuildServer",
+                 " -r BuildServerInstanceCore",
                  " --region ",
                  {
                    "Ref": "AWS::Region"
@@ -695,11 +698,11 @@
             "Fn::Join": [ "",
                [
                  "<script>\n",
-                 "cfn-init.exe -v -c config -s ",
+                 "cfn-init.exe -v -s ",
                  {
                    "Ref": "AWS::StackId"
                  },
-                 " -r QuickStart-CodeDeployServer",
+                 " -r CodeDeployServerInstance",
                  " --region ",
                  {
                    "Ref": "AWS::Region"
@@ -809,11 +812,11 @@
             "Fn::Join": [ "",
                [
                  "<script>\n",
-                 "cfn-init.exe -v -c config -s ",
+                 "cfn-init.exe -v -s ",
                  {
                    "Ref": "AWS::StackId"
                  },
-                 " -r QuickStart-CodeDeployServer2",
+                 " -r CodeDeployServerInstance2",
                  " --region ",
                  {
                    "Ref": "AWS::Region"
