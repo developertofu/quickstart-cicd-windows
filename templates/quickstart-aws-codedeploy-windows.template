@@ -390,7 +390,7 @@
                          {
                             "Ref": "AWS::StackName"
                          },
-                            "' -Resource 'QuickStart-BuildServer' -Region '",
+                            "' -Resource 'BuildServerInstanceWithDemoAppInstalled' -Region '",
                          {
                             "Ref": "AWS::Region"
                          },
@@ -443,11 +443,11 @@
                   "Fn::Join":[
                     "",
                     [
-                      "powershell.exe -Command \"C:\\cfn\\scripts\\Run-InitialBuild.ps1 -BuildFilePath '",
-                      " C:\\Projects\\WindowsCodeDeployDemo\\SoccerTeamWeb\\SoccerTeamWeb.csproj",
-                      "' -BucketName '",
+                      "powershell.exe -Command \"C:\\cfn\\scripts\\Run-InitialBuild.ps1 -BuildFilePath ",
+                      "C:\\Projects\\WindowsCodeDeployDemo\\SoccerTeamWeb\\SoccerTeamWeb.csproj",
+                      " -BucketName ",
                       {"Ref" : "CodeDeployBucket"},
-                      "'\""
+                      "\""
                     ]
                   ]
                 },
@@ -538,7 +538,7 @@
                          {
                             "Ref": "AWS::StackName"
                          },
-                            "' -Resource 'QuickStart-BuildServer' -Region '",
+                            "' -Resource 'BuildServerInstanceCore' -Region '",
                          {
                             "Ref": "AWS::Region"
                          },
@@ -645,7 +645,7 @@
                          {
                             "Ref": "AWS::StackName"
                          },
-                            "' -Resource 'QuickStart-CodeDeployServer1' -Region '",
+                            "' -Resource 'CodeDeployServerInstance' -Region '",
                          {
                             "Ref": "AWS::Region"
                          },
@@ -759,7 +759,7 @@
                          {
                             "Ref": "AWS::StackName"
                          },
-                            "' -Resource 'QuickStart-CodeDeployServer2' -Region '",
+                            "' -Resource 'CodeDeployServerInstance2' -Region '",
                          {
                             "Ref": "AWS::Region"
                          },
