@@ -493,7 +493,7 @@
       "CreationPolicy": {
         "ResourceSignal": {
           "Count": "1",
-          "Timeout": "PT75M"
+          "Timeout": "PT25M"
         }
       }
     },
@@ -604,7 +604,7 @@
       "CreationPolicy": {
         "ResourceSignal": {
           "Count": "1",
-          "Timeout": "PT75M"
+          "Timeout": "PT25M"
         }
       }
     },
@@ -717,8 +717,14 @@
       "CreationPolicy": {
         "ResourceSignal": {
           "Count": "1",
-          "Timeout": "PT75M"
+          "Timeout": "PT25M"
         }
+      }
+    },
+    "CodeDeployServerInstanceEIP" : {
+      "Type" : "AWS::EC2::EIP",
+      "Properties" : {
+        "InstanceId" : { "Ref" : "CodeDeployServerInstance" }
       }
     },
     "CodeDeployServerInstance2" : {
@@ -831,8 +837,15 @@
       "CreationPolicy": {
         "ResourceSignal": {
           "Count": "1",
-          "Timeout": "PT75M"
+          "Timeout": "PT25M"
         }
+      }
+    },
+    "CodeDeployServerInstance2EIP" : {
+      "Type" : "AWS::EC2::EIP",
+      "Condition" : "CreateMultipleCodeDeployServers",
+      "Properties" : {
+        "InstanceId" : { "Ref" : "CodeDeployServerInstance2" }
       }
     },
     "CodeDeployTestingELB": {
