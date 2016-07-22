@@ -659,7 +659,7 @@
                 "command": {
                   "Fn::Join": ["", ["powershell.exe -Command Install-WindowsFeature Web-Server,Web-Asp-Net45 -IncludeManagementTools"] ]
                 },
-                "waitAfterCompletion": "forever"
+                "waitAfterCompletion": "0"
               },
               "e-download-code-deploy-agent": {
                  "command": {
@@ -675,7 +675,7 @@
               },
               "f-install-code-deploy-agent": {
                 "command": "powershell.exe -Command \"C:\\cfn\\scripts\\Install-CodeDeploy.ps1\"",
-                "waitAfterCompletion": "forever"
+                "waitAfterCompletion": "0"
               },
               "g-signal-success": {
                 "command": "powershell.exe -Command \"Write-AWSQuickStartStatus\"",
@@ -687,19 +687,12 @@
       },
       "Properties" : {
         "InstanceType" : "t2.medium",
+        "SecurityGroupIds" : [{"Ref": "CodeDeployServerSecurityGroup"} ],
+        "SubnetId": {"Ref": "PublicSubnet1"},
         "ImageId" : { "Fn::FindInMap" : [ "AWSAMIRegionMap", { "Ref" : "AWS::Region" }, "WS2012R2" ]},
         "IamInstanceProfile": {"Ref":"CodeDeployTargetServerProfile"},
         "KeyName": {"Ref": "KeyPairName"},
         "Tags" : [ { "Key" : "Name", "Value" : "QuickStart-CodeDeployServer" }],
-        "NetworkInterfaces": [
-          {
-            "AssociatePublicIpAddress": true,
-            "DeleteOnTermination": true,
-            "DeviceIndex": "0",
-            "GroupSet": [{"Ref": "CodeDeployServerSecurityGroup"}],
-            "SubnetId": {"Ref": "PublicSubnet1"}
-          }
-        ],
         "UserData": {
           "Fn::Base64": {
             "Fn::Join": [ "",
@@ -787,7 +780,7 @@
                 "command": {
                   "Fn::Join": ["", ["powershell.exe -Command Install-WindowsFeature Web-Server,Web-Asp-Net45 -IncludeManagementTools"] ]
                 },
-                "waitAfterCompletion": "forever"
+                "waitAfterCompletion": "0"
               },
               "e-download-code-deploy-agent": {
                  "command": {
@@ -803,7 +796,7 @@
               },
               "f-install-code-deploy-agent": {
                 "command": "powershell.exe -Command \"C:\\cfn\\scripts\\Install-CodeDeploy.ps1\"",
-                "waitAfterCompletion": "forever"
+                "waitAfterCompletion": "0"
               },
               "g-signal-success": {
                 "command": "powershell.exe -Command \"Write-AWSQuickStartStatus\"",
@@ -815,19 +808,12 @@
       },
       "Properties" : {
         "InstanceType" : "t2.medium",
+        "SecurityGroupIds" : [{"Ref": "CodeDeployServerSecurityGroup"} ],
+        "SubnetId": {"Ref": "PublicSubnet2"},
         "ImageId" : { "Fn::FindInMap" : [ "AWSAMIRegionMap", { "Ref" : "AWS::Region" }, "WS2012R2" ]},
         "IamInstanceProfile": {"Ref":"CodeDeployTargetServerProfile"},
         "KeyName": {"Ref": "KeyPairName"},
         "Tags" : [ { "Key" : "Name", "Value" : "QuickStart-CodeDeployServer" }],
-        "NetworkInterfaces": [
-          {
-            "AssociatePublicIpAddress": true,
-            "DeleteOnTermination": true,
-            "DeviceIndex": "0",
-            "GroupSet": [{"Ref": "CodeDeployServerSecurityGroup"}],
-            "SubnetId": {"Ref": "PublicSubnet2"}
-          }
-        ],
         "UserData": {
           "Fn::Base64": {
             "Fn::Join": [ "",
