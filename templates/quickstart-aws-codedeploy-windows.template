@@ -688,7 +688,7 @@
       "Properties" : {
         "InstanceType" : "t2.medium",
         "SecurityGroupIds" : [{"Ref": "CodeDeployServerSecurityGroup"} ],
-        "SubnetId": {"Ref": "PublicSubnet1"},
+        "SubnetId": {"Ref": "PrivateSubnet1"},
         "ImageId" : { "Fn::FindInMap" : [ "AWSAMIRegionMap", { "Ref" : "AWS::Region" }, "WS2012R2" ]},
         "IamInstanceProfile": {"Ref":"CodeDeployTargetServerProfile"},
         "KeyName": {"Ref": "KeyPairName"},
@@ -809,7 +809,7 @@
       "Properties" : {
         "InstanceType" : "t2.medium",
         "SecurityGroupIds" : [{"Ref": "CodeDeployServerSecurityGroup"} ],
-        "SubnetId": {"Ref": "PublicSubnet2"},
+        "SubnetId": {"Ref": "PrivateSubnet2"},
         "ImageId" : { "Fn::FindInMap" : [ "AWSAMIRegionMap", { "Ref" : "AWS::Region" }, "WS2012R2" ]},
         "IamInstanceProfile": {"Ref":"CodeDeployTargetServerProfile"},
         "KeyName": {"Ref": "KeyPairName"},
