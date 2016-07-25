@@ -1,0 +1,47 @@
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003"> 
+   <PropertyGroup>
+      <AssemblyName>SoccerTeamWeb</AssemblyName>
+      <RootNamespace>SoccerTeamWeb</RootNamespace>
+      <AppWebDllName>default.aspx.cdcab7d2</AppWebDllName>
+      <RootDir>C:\Projects\WindowsCodeDeployDemo\</RootDir>
+      <SourcePath>C:\Projects\WindowsCodeDeployDemo\SoccerTeamWeb\</SourcePath>
+      <OutputPath>C:\Projects\WindowsCodeDeployDemo\Release\</OutputPath>
+      <BucketName></BucketName>
+      <VSWorkingDirectory>C:\Program Files (x86)\Microsoft SDKs\Windows\v10.0A\bin\NETFX 4.6 Tools\</VSWorkingDirectory>
+      <MSBuildCommunityTasks>C:\Projects\WindowsCodeDeployDemo\packages\MSBuildTasks.1.5.0.183</MSBuildCommunityTasks>
+      <Version>1.0</Version>
+   </PropertyGroup>
+   <ItemGroup>
+    <Compile Include="Default.aspx.cs"/>
+    <Compile Include="Default.aspx.designer.cs"/>
+    <Compile Include="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+   <Import Project="$(MSBuildCommunityTasks)\build\MSBuildTasks.targets"/>
+   <Target Name="Build">
+      <RemoveDir Directories="$(OutputPath)$(Version)" Condition="Exists('$(OutputPath)$(Version)')"/>
+      <Csc Sources="@(Compile)" OutputAssembly="bin/$(AssemblyName).dll" TargetType="library" Optimize="true" DebugType="pdbonly"/>
+      <AspNetCompiler VirtualPath="/" PhysicalPath="$(SourcePath)" TargetPath="$(OutputPath)$(Version)/temp" Force="true" Debug="false" Clean="true" FixedNames="true" Updateable="false" />
+      <Copy SourceFiles="$(OutputPath)$(Version)\temp\bin\$(AssemblyName).dll" DestinationFolder="$(OutputPath)$(Version)"/>
+      <Copy SourceFiles="$(OutputPath)$(Version)\temp\bin\$(AppWebDllName).compiled" DestinationFolder="$(OutputPath)$(Version)"/>
+      <Copy SourceFiles="$(OutputPath)$(Version)\temp\bin\App_Web_$(AppWebDllName).dll" DestinationFolder="$(OutputPath)$(Version)"/>
+      <MakeDir Directories="$(OutputPath)$(Version)\Scripts" Condition="!Exists('$(OutputPath)$(Version)\Scripts')"/>
+      <Copy SourceFiles="$(RootDir)appspec.yml" DestinationFolder="$(OutputPath)$(Version)"/>
+      <Copy SourceFiles="$(OutputPath)$(Version)\temp\PrecompiledApp.config" DestinationFolder="$(OutputPath)$(Version)"/>      
+      <Copy SourceFiles="$(OutputPath)$(Version)\temp\Default.aspx" DestinationFolder="$(OutputPath)$(Version)"/>
+      <Copy SourceFiles="$(OutputPath)$(Version)\temp\star-icon.png" DestinationFolder="$(OutputPath)$(Version)"/>
+      <Copy SourceFiles="$(OutputPath)$(Version)\temp\Web.config" DestinationFolder="$(OutputPath)$(Version)"/>
+      <Copy SourceFiles="$(OutputPath)$(Version)\temp\installwebsite.bat" DestinationFolder="$(OutputPath)$(Version)\Scripts"/>
+      <Copy SourceFiles="$(OutputPath)$(Version)\temp\installwebsite.ps1" DestinationFolder="$(OutputPath)$(Version)\Scripts"/>
+      <Copy SourceFiles="$(OutputPath)$(Version)\temp\deletewebsite.bat" DestinationFolder="$(OutputPath)$(Version)\Scripts"/>
+      <Copy SourceFiles="$(OutputPath)$(Version)\temp\deletewebsite.ps1" DestinationFolder="$(OutputPath)$(Version)\Scripts"/>
+      <RemoveDir Directories="$(OutputPath)$(Version)\temp" />
+   </Target>
+   <ItemGroup>
+      <ZipFiles Include="$(OutputPath)$(Version)\**\*.*" />
+   </ItemGroup>
+   <Target Name="Deploy">
+      <Zip Files="@(ZipFiles)" ZipLevel="9" WorkingDirectory="$(OutputPath)$(Version)" ZipFileName="$(RootDir)Deploy\$(AssemblyName).$(Version)-DeploymentPackage.zip"/>
+      <Exec Command="Powershell &quot;Remove-S3Object -BucketName $(BucketName) -Key $(AssemblyName).$(Version)-DeploymentPackage.zip -Force&quot;" LogStandardErrorAsError="true" ContinueOnError="true" />
+      <Exec Command="Powershell &quot;Write-S3Object -BucketName $(BucketName) -File $(RootDir)Deploy\$(AssemblyName).$(Version)-DeploymentPackage.zip -Key $(AssemblyName).$(Version)-DeploymentPackage.zip&quot;" LogStandardErrorAsError="true" ContinueOnError="true" />
+   </Target>
+</Project>
