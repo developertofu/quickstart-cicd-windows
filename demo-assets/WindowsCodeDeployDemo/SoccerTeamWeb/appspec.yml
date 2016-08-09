@@ -1,0 +1,28 @@
+version: 0.0
+os: windows
+files:
+  - source: \Default.aspx
+    destination: c:\inetpub\wwwroot\SoccerTeamWeb
+  - source: \star-icon.png
+    destination: c:\inetpub\wwwroot\SoccerTeamWeb
+  - source: \PrecompiledApp.config
+    destination: c:\inetpub\wwwroot\SoccerTeamWeb
+  - source: \Web.config
+    destination: c:\inetpub\wwwroot\SoccerTeamWeb
+  - source: \SoccerTeamWeb.dll
+    destination: c:\inetpub\wwwroot\SoccerTeamWeb\bin
+  - source: \App_Web_default.aspx.cdcab7d2.dll
+    destination: c:\inetpub\wwwroot\SoccerTeamWeb\bin
+  - source: \default.aspx.cdcab7d2.compiled
+    destination: c:\inetpub\wwwroot\SoccerTeamWeb\bin
+  - source: \Scripts\deletewebsite.ps1
+    destination: c:\temp
+  - source: \Scripts\installwebsite.ps1
+    destination: c:\temp
+hooks:
+  BeforeInstall:
+    - location: \Scripts\deletewebsite.bat
+      timeout: 180
+  AfterInstall:
+    - location: \Scripts\installwebsite.bat
+      timeout: 180
