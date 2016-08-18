@@ -20,16 +20,27 @@
         },
         {
           "Label": {
-            "default": "CodeDeploy and Build Server Configuration"
+            "default": "CodeDeploy and DemoApp Configuration"
           },
           "Parameters": [
-            "CodeDeployBucketName",
             "CodeDeployAppName",
             "CodeDeployDeploymentGroupName",
             "CodeDeployNumberOfServers",
             "DemoAppInclude",
             "DemoAppDBUserName",
             "DemoAppDBPassword"
+          ]
+        },
+        {
+          "Label": {
+            "default": "Jenkins Build Configuration"
+          },
+          "Parameters": [
+            "JenkinsUserName",
+            "JenkinsPassword",
+            "SourceFolder",
+            "ReleaseFolder",
+            "MSBuildProjectOrSolutionFileName"
           ]
         }
       ],
@@ -55,9 +66,6 @@
         "AdminPassword": {
           "default": "Remote Desktop Gateway Admin user password"
         },
-        "CodeDeployBucketName": {
-          "default": "S3 Bucket name for deploying code revisions"
-        },
         "CodeDeployAppName": {
           "default": "Application name that will be used by CodeDeploy."
         },
@@ -75,6 +83,21 @@
         },
         "DemoAppDBPassword": {
           "default": "Password for the user account that is used by the demo app"
+        },
+        "JenkinsUserName": {
+          "default": "This user will be created in Jenkins so you can manage your Jenkins build jobs"
+        },
+        "JenkinsPassword": {
+          "default": "This is the password for the Jenkins user you created"
+        },
+        "SourceFolder": {
+          "default": "Inside of your code zip package you need to give the detailed path to the source code you want to build"
+        },
+        "ReleaseFolder": {
+          "default": "In order to package up your release you need to specify a folder where the binaries and config information can be zipped for CodeDeploy"
+        },
+        "MSBuildProjectOrSolutionFileName": {
+          "default": "Inside of your SourceFolder there will be either a project or solution file that will describe how you want MSBuild to be run and potentially packaged and released to the ReleaseFolder"
         }
       }
     }
@@ -121,14 +144,6 @@
     "KeyPairName": {
       "Description": "Name of an existing EC2 KeyPair to enable SSH access to the instances",
       "Type": "AWS::EC2::KeyPair::KeyName"
-    },
-    "CodeDeployBucketName": {
-      "Description": "Unique DNS name for an S3 bucket to build and deploy your code from.",
-      "Type": "String",
-      "MinLength": "1",
-      "MaxLength": "24",
-      "AllowedPattern": "[-a-z0-9]*",
-      "ConstraintDescription": "can contain only alphanumeric lower case characters and dashes."
     },
     "CodeDeployAppName": {
       "Description": "Application name that will be used by CodeDeploy.",
@@ -177,6 +192,41 @@
       "Default": "1",
       "Description": "Choose how many test servers you want to deploy with CodeDeploy.",
       "Type": "String"
+    },
+    "SourceFolder": {
+      "Description": "This will be used to find the path to the source code to build after it is unzipped.",
+      "Type": "String",
+      "MinLength": "1",
+      "MaxLength": "100"
+    },
+    "ReleaseFolder": {
+      "Description": "This release folder can be used by the Jenkins job to only copy the binaries to the test server. All content copied into this folder will be zipped and shipped via CodeDeploy.",
+      "Type": "String",
+      "MinLength": "1",
+      "MaxLength": "100"
+    },
+    "MSBuildProjectOrSolutionFileName": {
+      "Description": "We need the path inside of your code archive to the .proj or .sln file used to drive the MSBuild step in Jenkins.",
+      "Type": "String",
+      "MinLength": "1",
+      "MaxLength": "100"
+    },
+    "JenkinsUserName": {
+      "Default": "JenkinsUser",
+      "Description" : "This account will be given access to Jenkins to configure and run builds.",
+      "Type": "String",
+      "MinLength": "1",
+      "MaxLength": "16",
+      "AllowedPattern" : "[a-zA-Z][a-zA-Z0-9]*",
+      "ConstraintDescription" : "must begin with a letter and contain only alphanumeric characters."
+    },
+    "JenkinsPassword": {
+      "NoEcho": "true",
+      "Description" : "The password for the Jenkins user.",
+      "Type": "String",
+      "MinLength": "8",
+      "MaxLength": "41",
+      "ConstraintDescription" : "Minimum of 8 characters"
     }
   },
   "Resources": {
@@ -293,9 +343,6 @@
               "Outputs.RemoteDesktopGatewaySGID"
             ]
           },
-          "CodeDeployBucketName":{
-            "Ref" : "CodeDeployBucketName"
-          },
           "CodeDeployAppName":{
             "Ref" : "CodeDeployAppName"
           }, 
@@ -313,6 +360,21 @@
           },
           "CodeDeployNumberOfServers":{
             "Ref" : "CodeDeployNumberOfServers"
+          },
+          "JenkinsUserName":{
+            "Ref" : "JenkinsUserName"
+          },
+          "JenkinsPassword":{
+            "Ref" : "JenkinsPassword"
+          },
+          "SourceFolder":{
+            "Ref" : "SourceFolder"
+          },
+          "ReleaseFolder":{
+            "Ref" : "ReleaseFolder"
+          },
+          "MSBuildProjectOrSolutionFileName":{
+            "Ref" : "MSBuildProjectOrSolutionFileName"
           }
         }
      }
