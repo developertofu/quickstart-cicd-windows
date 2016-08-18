@@ -23,7 +23,8 @@ try {
     $jenkinsConfig.Save("C:\Program Files (x86)\Jenkins\jenkins.xml")
     
     $jenkinsCLIConfig = [xml](Get-Content "C:\Program Files (x86)\Jenkins\config.xml")
-    $jenkinsCLIConfig.hudson.slaveAgentPort = "0"
+    $jenkinsCLIConfig.hudson.slaveAgentPort = "8181"
+    $jenkinsCLIConfig.hudson.authorizationStrategy.SetAttribute("class","hudson.security.AuthorizationStrategy`$Unsecured")
     $jenkinsCLIConfig.Save("C:\Program Files (x86)\Jenkins\config.xml")
     
     Copy-Item "C:\cfn\downloads\msbuild.hpi" "C:\Program Files (x86)\Jenkins\plugins"
@@ -46,15 +47,19 @@ try {
           throw "Jenkins service took longer than 5 minutes to reach running state."
        }
     }
-
-    $adminpassword = Get-Content "C:\Program Files (x86)\Jenkins\secrets\initialAdminPassword"
     
     cd "C:\Program Files (x86)\Jenkins\jre\bin"
 
-    cmd /c 'java.exe -jar "C:\Program Files (x86)\Jenkins\war\WEB-INF\jenkins-cli.jar" -s http://localhost:8080 groovy --username admin --password $adminpassword = < c:\cfn\config\Create-Jenkins-User.groovy'
-    #Remove-Item "C:\cfn\scripts\Create-Jenkins-User.groovy"
-    
-    cmd /c 'java.exe -jar "C:\Program Files (x86)\Jenkins\war\WEB-INF\jenkins-cli.jar" -s http://localhost:8080 create-job $JobName --username admin --password $adminpassword < c:\cfn\config\config.xml'   
+    Start-Sleep -s 10       
+
+    cmd /c 'java.exe -jar "C:\Program Files (x86)\Jenkins\war\WEB-INF\jenkins-cli.jar" -s http://localhost:8080 groovy = < c:\cfn\config\create-jenkins-user.groovy'
+    Remove-Item "C:\cfn\scripts\Create-Jenkins-User.groovy"
+
+    $jenkinsCLIConfig = [xml](Get-Content "C:\Program Files (x86)\Jenkins\config.xml")
+    $jenkinsCLIConfig.hudson.authorizationStrategy.class = "hudson.security.FullControlOnceLoggedInAuthorizationStrategy"
+    $jenkinsCLIConfig.Save("C:\Program Files (x86)\Jenkins\config.xml")
+
+    Restart-Service "Jenkins"
 }
 catch {
     Write-Verbose "$($_.exception.message)@ $(Get-Date)"
