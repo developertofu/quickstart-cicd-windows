@@ -1,17 +1,11 @@
-[CmdletBinding()]
-param (
-    [Parameter(Mandatory=$true)]
-    [string]$JobName
-)
-
 try {
     $ErrorActionPreference = "Stop"
 
     Start-Transcript -Path c:\cfn\log\Install-DotNetBuildServer-Jenkins.ps1.txt -Append
       
-    Unblock-File -Path C:\cfn\downloads\jenkins\jenkins.msi
+    Unblock-File -Path C:\cfn\downloads\jenkins.msi
     $Arguments = "/q", "/l", "c:\cfn\log\Install-Jenkins-Log.txt"
-    Start-Process "C:\cfn\downloads\jenkins\jenkins.msi" -ArgumentList $Arguments -Wait
+    Start-Process "C:\cfn\downloads\jenkins.msi" -ArgumentList $Arguments -Wait
     $Arguments = "/q", "/l", "c:\cfn\log\Install-MsBuild-Log.txt"
     Start-Process "C:\cfn\downloads\BuildTools_Full.exe" -ArgumentList $Arguments -Wait
     
