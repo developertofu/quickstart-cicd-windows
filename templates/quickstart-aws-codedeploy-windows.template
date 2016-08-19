@@ -485,6 +485,7 @@
                 "s3:PutObject"
               ],
               "Resource": [
+                "arn:aws:s3:::tomfullershare",
                 { "Fn::Join" : ["", [ "arn:aws:s3:::quickstart-dotnet-ci-source-", { "Ref": "AWS::Region" } , "-", {"Ref" : "AWS::AccountId"} ]] }
               ],
               "Effect": "Allow"
@@ -555,7 +556,7 @@
                             "<projectName>",
                               {"Ref": "CodeDeployAppName"},
                             "</projectName>",
-                            "<actionTypeCategory>Build</ActionTypeCategory>",
+                            "<actionTypeCategory>Build</actionTypeCategory>",
                             "<actionTypeProvider>",
                               {"Ref": "CodeDeployAppName"},
                             "-Jenkins</actionTypeProvider>",
@@ -578,7 +579,7 @@
                                "<spec>* * * * *</spec>",
                                "<ignorePostCommitHooks>false</ignorePostCommitHooks>",
                             "</hudson.triggers.SCMTrigger>",
-                         "</triggers",
+                         "</triggers>",
                          "<concurrentBuild>false</concurrentBuild>",
                          "<builders>",
                             "<hudson.plugins.msbuild.MsBuildBuilder plugin=\"msbuild@1.26\">",
