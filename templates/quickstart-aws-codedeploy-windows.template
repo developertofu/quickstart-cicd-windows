@@ -546,21 +546,21 @@
                 "content": {
                   "Fn::Join": ["",
                     [ 
-                     "<?xml version=\"1.0\" encoding=\"UTF-8\"?>",
+                     "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n",
                       "<project>",
                          "<actions/><description/><keepDependencies>false</keepDependencies><properties/>",
                          "<scm plugin=\"aws-codepipeline@0.16\" class=\"com.amazonaws.codepipeline.jenkinsplugin.AWSCodePipelineSCM\">",
                             "<clearWorkspace>true</clearWorkspace>",
                             "<projectName>",
-                            {"Ref": "CodeDeployAppName"},
+                              {"Ref": "CodeDeployAppName"},
                             "</projectName>",
                             "<actionTypeCategory>Build</ActionTypeCategory>",
                             "<actionTypeProvider>",
-                            {"Ref": "CodeDeployAppName"},
+                              {"Ref": "CodeDeployAppName"},
                             "-Jenkins</actionTypeProvider>",
                             "<actionTypeVersion>1</actionTypeVersion>",
                             "<region>",
-                            {"Ref": "AWS::Region"},
+                              {"Ref": "AWS::Region"},
                             "</region>",
                             "<awsAccessKey/>",
                             "<awsSecretKey/>",
@@ -718,16 +718,8 @@
                  "waitAfterCompletion": "0"
               },
               "j-install-dotnet-build-server-components": {
-                "command": {
-                  "Fn::Join":["",
-                    [
-                      "powershell.exe -Command \"C:\\cfn\\Scripts\\Install-DotNetBuildServer-Jenkins.ps1 -JobName '",
-                      {"Ref": "CodeDeployAppName"},
-                      "'"
-                    ]
-                  ]
-                },
-                "waitAfterCompletion": 0
+                  "command": "powershell.exe -Command \"C:\\cfn\\Scripts\\Install-DotNetBuildServer-Jenkins.ps1\"",
+                  "waitAfterCompletion": 0
               },
               "k-create-initial-jenkins-job": {
                 "command": {
