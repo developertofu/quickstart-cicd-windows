@@ -120,6 +120,7 @@
   "Conditions" :{
     "DemoAppIncluded" : { "Fn::Equals" : [ { "Ref" : "DemoAppInclude" }, "yes" ] },
     "DemoAppNotIncluded" : { "Fn::Equals" : [ { "Ref" : "DemoAppInclude" }, "no" ] },
+    "CreateOneCodeDeployServer" : { "Fn::Equals" : [ { "Ref" : "CodeDeployNumberOfServers" }, "1" ] },
     "CreateMultipleCodeDeployServers" : { "Fn::Equals" : [ { "Ref" : "CodeDeployNumberOfServers" }, "2" ] }
   },
   "Mappings": {
@@ -1033,7 +1034,7 @@
       "Properties": {
         "Subnets": [{"Ref":"PublicSubnet1"},{"Ref":"PublicSubnet2"}],
         "Scheme": "internet-facing",
-        "Instances": {"Ref": "MSBuildWithJenkinsInstance"},
+        "Instances": [{"Ref": "MSBuildWithJenkinsInstance"}],
         "Listeners": [{"LoadBalancerPort": "80","InstancePort": "8080","Protocol": "TCP"}],
         "SecurityGroups": [{"Ref": "BuildServerELBSG"}],
         "HealthCheck": {"Target": "TCP:8080","HealthyThreshold": "3","UnhealthyThreshold": "5","Interval": "10","Timeout": "5"}
