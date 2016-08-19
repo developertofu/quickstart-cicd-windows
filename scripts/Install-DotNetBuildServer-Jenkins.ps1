@@ -18,7 +18,6 @@ try {
     
     $jenkinsCLIConfig = [xml](Get-Content "C:\Program Files (x86)\Jenkins\config.xml")
     $jenkinsCLIConfig.hudson.slaveAgentPort = "8181"
-    $jenkinsCLIConfig.hudson.authorizationStrategy.SetAttribute("class","hudson.security.AuthorizationStrategy`$Unsecured")
     $jenkinsCLIConfig.Save("C:\Program Files (x86)\Jenkins\config.xml")
     
     Copy-Item "C:\cfn\downloads\msbuild.hpi" "C:\Program Files (x86)\Jenkins\plugins"
@@ -46,12 +45,13 @@ try {
 
     Start-Sleep -s 10       
 
-    cmd /c 'java.exe -jar "C:\Program Files (x86)\Jenkins\war\WEB-INF\jenkins-cli.jar" -s http://localhost:8080 groovy = < c:\cfn\config\create-jenkins-user.groovy'
-    Remove-Item "C:\cfn\scripts\Create-Jenkins-User.groovy"
+    $adminPassword = Get-Content("C:\Program Files (x86)\Jenkins\secrets\initialAdminPassword")
 
-    $jenkinsCLIConfig = [xml](Get-Content "C:\Program Files (x86)\Jenkins\config.xml")
-    $jenkinsCLIConfig.hudson.authorizationStrategy.class = "hudson.security.FullControlOnceLoggedInAuthorizationStrategy"
-    $jenkinsCLIConfig.Save("C:\Program Files (x86)\Jenkins\config.xml")
+    $commandLine = 'java.exe -jar "C:\Program Files (x86)\Jenkins\war\WEB-INF\jenkins-cli.jar" -s http://localhost:8080 groovy --username admin --password ' + $adminPassword + ' = < c:\cfn\scripts\create-jenkins-user.groovy'
+
+    cmd /c $commandLine
+    
+    Remove-Item "C:\cfn\scripts\Create-Jenkins-User.groovy"
 
     Restart-Service "Jenkins"
 }
