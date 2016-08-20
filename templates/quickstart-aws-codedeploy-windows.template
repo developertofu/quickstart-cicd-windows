@@ -1047,7 +1047,7 @@
       "Properties": {
         "Category": "Build",
         "Provider": {"Fn::Join" : ["", [{"Ref" : "CodeDeployAppName"}, "-Jenkins"]]},
-        "Version": "2",
+        "Version": "3",
         "ConfigurationProperties": [
           {
             "Key": "true",
@@ -1118,7 +1118,7 @@
                 "ActionTypeId": {
                   "Category": "Build",
                   "Owner": "Custom",
-                  "Version": "1",
+                  "Version": "3",
                   "Provider": {"Fn::Join" : ["", [{"Ref" : "CodeDeployAppName"}, "-Jenkins"]]}
                 },
                 "OutputArtifacts": [
@@ -1210,7 +1210,7 @@
                 "ActionTypeId": {
                   "Category": "Build",
                   "Owner": "Custom",
-                  "Version": "1",
+                  "Version": "3",
                   "Provider": {"Fn::Join" : ["", [{"Ref" : "CodeDeployAppName"}, "-Jenkins"]]}
                 },
                 "OutputArtifacts": [
