@@ -1047,7 +1047,7 @@
       "Properties": {
         "Category": "Build",
         "Provider": {"Fn::Join" : ["", [{"Ref" : "CodeDeployAppName"}, "-Jenkins"]]},
-        "Version": "1",
+        "Version": "2",
         "ConfigurationProperties": [
           {
             "Key": "true",
