@@ -1,3 +1,9 @@
+[CmdletBinding()]
+param (
+    [Parameter(Mandatory=$true)]
+    [string]$JobName
+)
+
 try {
     $ErrorActionPreference = "Stop"
 
@@ -41,9 +47,7 @@ try {
        }
     }
     
-    cd "C:\Program Files (x86)\Jenkins\jre\bin"
-
-    Start-Sleep -s 10       
+    cd "C:\Program Files (x86)\Jenkins\jre\bin"      
 
     $adminPassword = Get-Content("C:\Program Files (x86)\Jenkins\secrets\initialAdminPassword")
 
@@ -51,9 +55,20 @@ try {
 
     cmd /c $commandLine
     
-    Remove-Item "C:\cfn\scripts\Create-Jenkins-User.groovy"
-
     Restart-Service "Jenkins"
+    
+    Start-Sleep -s 30
+    
+    cmd /c $commandLine
+    
+    Remove-Item "C:\cfn\scripts\create-jenkins-user.groovy"
+
+    Start-Sleep -s 30
+
+    $commandLine = 'java.exe -jar "C:\Program Files (x86)\Jenkins\war\WEB-INF\jenkins-cli.jar" -s http://localhost:8080 create-job ' + $JobName + ' --username admin --password ' + $adminPassword + ' < c:\cfn\config\config.xml'
+
+    cmd /c $commandLine
+    
 }
 catch {
     Write-Verbose "$($_.exception.message)@ $(Get-Date)"
