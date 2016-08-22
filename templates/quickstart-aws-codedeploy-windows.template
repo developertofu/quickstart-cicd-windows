@@ -311,20 +311,6 @@
               "Statement": [
                 {
                   "Effect": "Allow",
-                  "Action": "s3:ListBucket",
-                  "Resource": { "Fn::Join" : ["", ["arn:aws:s3:::", { "Ref" : "SourceCodeBucket" } ] ] } 
-                },
-                {
-                  "Effect": "Allow",
-                  "Action": [ 
-                    "s3:PutObject",
-                    "s3:GetObject",
-                    "s3:DeleteObject"
-                  ], 
-                  "Resource": { "Fn::Join" : ["", ["arn:aws:s3:::", { "Ref" : "SourceCodeBucket" }, "/*" ] ] } 
-                },
-                {
-                  "Effect": "Allow",
               	  "Action": [
                      "codepipeline:AcknowledgeJob",
                      "codepipeline:GetJobDetails",
@@ -442,30 +428,32 @@
           "Statement": [
             {
               "Action": [
-                "s3:*"
+                "s3:GetObject",
+                "s3:GetObjectVersion",
+                "s3:GetBucketVersioning"
               ],
               "Resource": [
+                { "Fn::Join" : ["", ["arn:aws:s3:::", { "Ref" : "SourceCodeBucket" }, "/*" ] ] },
+                { "Fn::Join" : ["", ["arn:aws:s3:::", { "Ref" : "SourceCodeBucket" }] ] },
                 "arn:aws:s3:::tomfullershare/*",
-                { "Fn::Join" : ["", [ "arn:aws:s3:::quickstart-dotnet-ci-source-", { "Ref": "AWS::Region" } , "-", {"Ref" : "AWS::AccountId"}, "/*" ]] }
-                ],
-                "Effect": "Allow"
-            },
-            {
-              "Action": [
-                "s3:PutBucketPolicy",
-                "s3:PutObject"
-              ],
-              "Resource": [
-                "arn:aws:s3:::tomfullershare",
-                { "Fn::Join" : ["", [ "arn:aws:s3:::quickstart-dotnet-ci-source-", { "Ref": "AWS::Region" } , "-", {"Ref" : "AWS::AccountId"} ]] }
+                "arn:aws:s3:::tomfullershare"
               ],
               "Effect": "Allow"
             },
             {
               "Action": [
-                "codepipeline:*",
-                "iam:ListRoles",
-                "iam:PassRole",
+                "s3:PutObject"
+              ],
+              "Resource": [
+                { "Fn::Join" : ["", ["arn:aws:s3:::", { "Ref" : "SourceCodeBucket" }, "/*" ] ] },
+                { "Fn::Join" : ["", ["arn:aws:s3:::", { "Ref" : "SourceCodeBucket" }] ] },
+                "arn:aws:s3:::tomfullershare/*",
+                "arn:aws:s3:::tomfullershare"
+              ],
+              "Effect": "Allow"
+            },
+            {
+              "Action": [
                 "codedeploy:CreateDeployment",
                 "codedeploy:GetApplicationRevision",
                 "codedeploy:GetDeployment",
@@ -473,7 +461,8 @@
                 "codedeploy:RegisterApplicationRevision"
               ],
               "Resource": [
-                { "Fn::Join" : ["", [ "arn:aws:codepipeline:", { "Ref": "AWS::Region" },":",{"Ref": "AWS::AccountId"},":", {"Ref": "MyPipelineWithDemoApp"}]] }
+                { "Fn::Join" : ["", ["arn:aws:codedeploy:",{ "Ref" : "AWS::Region" },":",{ "Ref" : "AWS::AccountId" },":application:", { "Ref" : "CodeDeployAppName" }  ]  ] },
+                { "Fn::Join" : ["", ["arn:aws:codedeploy:",{ "Ref" : "AWS::Region" },":",{ "Ref" : "AWS::AccountId" },":application:", { "Ref" : "CodeDeployAppName" }, "/*"  ]  ] }
               ],
               "Effect": "Allow"
             }
@@ -481,6 +470,40 @@
         },
         "Roles": [{ "Ref": "CodePipelineTrustRole"}]
       }
+   },
+   "SourceCodeBucketPolicy": {
+      "Type": "AWS::S3::BucketPolicy",
+      "Properties": { 
+         "Bucket": { "Ref" : "SourceCodeBucket" },
+         "PolicyDocument": { 
+            "Statement": [
+            {
+               "Sid": "DenyUnEncryptedObjectUploads",
+               "Effect": "Deny",
+               "Principal": "*",
+               "Action": "s3:PutObject",
+               "Resource": { "Fn::Join" : ["", ["arn:aws:s3:::", { "Ref" : "SourceCodeBucket" }, "/*" ] ] },
+               "Condition": {
+                  "StringNotEquals": {
+                     "s3:x-amz-server-side-encryption": "aws:kms"
+                  }
+               }
+            },
+            {
+               "Sid": "DenyInsecureConnections",
+               "Effect": "Deny",
+               "Principal": "*",
+               "Action": "s3:*",
+               "Resource": { "Fn::Join" : ["", ["arn:aws:s3:::", { "Ref" : "SourceCodeBucket" }, "/*" ] ] },
+               "Condition": {
+                  "Bool": {
+                    "aws:SecureTransport": false
+                  }
+               }
+           }
+           ]
+        }
+     }
    },
    "MSBuildWithJenkinsInstance" : {
       "Type" : "AWS::EC2::Instance",
@@ -515,15 +538,33 @@
                   ]
                 }
               },
+              "c:\\cfn\\config\\hudson.plugins.msbuild.MsBuildBuilder.xml":{
+                "content": {
+                  "Fn::Join": ["::",
+                    [
+                      "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n",
+                         "<hudson.plugins.msbuild.MsBuildBuilder_-DescriptorImpl plugin=\"msbuild@1.26\">\n",
+                           "<installations>\n",
+                              "<hudson.plugins.msbuild.MsBuildInstallation>\n",
+                                 "<name>14.0</name>\n",
+                                 "<home>C:\\Program Files (x86)\\MSBuild\\14.0\\Bin</home>\n",
+                                 "<properties/>\n",
+                              "</hudson.plugins.msbuild.MsBuildInstallation>\n",
+                           "</installations>\n",
+                        "</hudson.plugins.msbuild.MsBuildBuilder_-DescriptorImpl>\n"
+                    ]
+                  ]
+                }
+              }, 
               "c:\\cfn\\config\\config.xml":{
                 "content": {
                   "Fn::Join": ["",
                     [ 
                      "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n",
-                      "<project>",
-                         "<actions/><description/><keepDependencies>false</keepDependencies><properties/>",
+                      "<project>\n",
+                         "<actions/><description/><keepDependencies>false</keepDependencies><properties/>\n",
                          "<scm plugin=\"aws-codepipeline@0.16\" class=\"com.amazonaws.codepipeline.jenkinsplugin.AWSCodePipelineSCM\">",
-                            "<clearWorkspace>true</clearWorkspace>",
+                            "<clearWorkspace>true</clearWorkspace>\n",
                             "<projectName>",
                               {"Ref": "CodeDeployAppName"},
                             "</projectName>",
@@ -531,7 +572,7 @@
                             "<actionTypeProvider>",
                               {"Ref": "CodeDeployAppName"},
                             "-Jenkins</actionTypeProvider>",
-                            "<actionTypeVersion>1</actionTypeVersion>",
+                            "<actionTypeVersion>6</actionTypeVersion>",
                             "<region>",
                               {"Ref": "AWS::Region"},
                             "</region>",
@@ -540,18 +581,18 @@
                             "<proxyHost/>",
                             "<proxyPort>0</proxyPort>",
                             "<awsClientFactory/>",
-                         "</scm>",
+                         "</scm>\n",
                          "<canRoam>true</canRoam>",
                          "<disabled>false</disabled>",
                          "<blockBuildWhenDownstreamBuilding>false</blockBuildWhenDownstreamBuilding>",
-                         "<blockBuildWhenUpstreamBuilding>false</blockBuildWhenUpstreamBuilding>",
+                         "<blockBuildWhenUpstreamBuilding>false</blockBuildWhenUpstreamBuilding>\n",
                          "<triggers>",
                             "<hudson.triggers.SCMTrigger>",
                                "<spec>* * * * *</spec>",
                                "<ignorePostCommitHooks>false</ignorePostCommitHooks>",
                             "</hudson.triggers.SCMTrigger>",
                          "</triggers>",
-                         "<concurrentBuild>false</concurrentBuild>",
+                         "<concurrentBuild>false</concurrentBuild>\n",
                          "<builders>",
                             "<hudson.plugins.msbuild.MsBuildBuilder plugin=\"msbuild@1.26\">",
                                "<msBuildName>14.0</msBuildName>",
@@ -576,7 +617,7 @@
                                "<continueOnBuildFailure>false</continueOnBuildFailure>",
                                "<unstableIfWarnings>false</unstableIfWarnings>",
                             "</hudson.plugins.msbuild.MsBuildBuilder>",
-                         "</builders>",
+                         "</builders>\n",
                          "<publishers>",
                             "<com.amazonaws.codepipeline.jenkinsplugin.AWSCodePipelinePublisher plugin=\"aws-codepipeline@0.16\">",
                                "<outputArtifacts>",
@@ -591,7 +632,7 @@
                                "<awsClientFactory/>",
                             "</com.amazonaws.codepipeline.jenkinsplugin.AWSCodePipelinePublisher>",
                          "</publishers>",
-                         "<buildWrappers/>",
+                         "<buildWrappers/>\n",
                       "</project>"
                      ]
                    ]
@@ -696,7 +737,7 @@
                       [ 
                         "powershell.exe -Command \"C:\\cfn\\Scripts\\Install-DotNetBuildServer-Jenkins.ps1 -JobName '",
                         {"Ref": "CodeDeployAppName"},
-                        "-Job'\""
+                        "'\""
                       ]
                     ]
                   }, 
@@ -1008,7 +1049,7 @@
       "Properties": {
         "Category": "Build",
         "Provider": {"Fn::Join" : ["", [{"Ref" : "CodeDeployAppName"}, "-Jenkins"]]},
-        "Version": "5",
+        "Version": "6",
         "ConfigurationProperties": [
           {
             "Key": "true",
@@ -1079,7 +1120,7 @@
                 "ActionTypeId": {
                   "Category": "Build",
                   "Owner": "Custom",
-                  "Version": "5",
+                  "Version": "6",
                   "Provider": {"Fn::Join" : ["", [{"Ref" : "CodeDeployAppName"}, "-Jenkins"]]}
                 },
                 "OutputArtifacts": [
@@ -1171,7 +1212,7 @@
                 "ActionTypeId": {
                   "Category": "Build",
                   "Owner": "Custom",
-                  "Version": "5",
+                  "Version": "6",
                   "Provider": {"Fn::Join" : ["", [{"Ref" : "CodeDeployAppName"}, "-Jenkins"]]}
                 },
                 "OutputArtifacts": [
