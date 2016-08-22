@@ -47,6 +47,8 @@ try {
        }
     }
     
+    Copy-Item "C:\cfn\config\hudson.plugins.msbuild.MsBuildBuilder.xml" "C:\Program Files (x86)\Jenkins" -force
+    
     cd "C:\Program Files (x86)\Jenkins\jre\bin"      
 
     $adminPassword = Get-Content("C:\Program Files (x86)\Jenkins\secrets\initialAdminPassword")
