@@ -91,7 +91,7 @@
           "default": "This is the password for the Jenkins user you created"
         },
         "SourceFolder": {
-          "default": "Inside of your code zip package you need to give the detailed path to the source code you want to build"
+          "default": "Inside of your code zip package you need to give the detailed path to the source code you want to build. *NOTE: You must include the root folder form the zip file in your path and use a backslash between folders."
         },
         "ReleaseFolder": {
           "default": "In order to package up your release you need to specify a folder where the binaries and config information can be zipped for CodeDeploy"
@@ -194,7 +194,7 @@
       "Type": "String"
     },
     "SourceFolder": {
-      "Description": "This will be used to find the path to the source code to build after it is unzipped.",
+      "Description": "This will be used to find the path to the source code to build after it is unzipped. *NOTE: You must include the root folder form the zip file in your path and use a backslash between folders.",
       "Type": "String",
       "MinLength": "1",
       "MaxLength": "100"

@@ -73,7 +73,7 @@
       "ConstraintDescription": "can contain only alphanumeric characters, dashes, and underscores."
     },
     "SourceFolder": {
-      "Description": "This will be used to find the path to the source code to build after it is unzipped.",
+      "Description": "This will be used to find the path to the source code to build after it is unzipped. *NOTE: You must include the root folder form the zip file in your path and use a backslash between folders.",
       "Type": "String",
       "MinLength": "1",
       "MaxLength": "100"
@@ -507,7 +507,9 @@
    },
    "MSBuildWithJenkinsInstance" : {
       "Type" : "AWS::EC2::Instance",
-      "DependsOn" : "SourceCodeBucket",
+      "DependsOn" : [
+        "SourceCodeBucket"
+      ],
       "Metadata": {
         "AWS::CloudFormation::Init": {
           "config": {
@@ -540,7 +542,7 @@
               },
               "c:\\cfn\\config\\hudson.plugins.msbuild.MsBuildBuilder.xml":{
                 "content": {
-                  "Fn::Join": ["::",
+                  "Fn::Join": ["",
                     [
                       "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n",
                          "<hudson.plugins.msbuild.MsBuildBuilder_-DescriptorImpl plugin=\"msbuild@1.26\">\n",
@@ -572,7 +574,7 @@
                             "<actionTypeProvider>",
                               {"Ref": "CodeDeployAppName"},
                             "-Jenkins</actionTypeProvider>",
-                            "<actionTypeVersion>6</actionTypeVersion>",
+                            "<actionTypeVersion>9</actionTypeVersion>",
                             "<region>",
                               {"Ref": "AWS::Region"},
                             "</region>",
@@ -1049,7 +1051,7 @@
       "Properties": {
         "Category": "Build",
         "Provider": {"Fn::Join" : ["", [{"Ref" : "CodeDeployAppName"}, "-Jenkins"]]},
-        "Version": "6",
+        "Version": "9",
         "ConfigurationProperties": [
           {
             "Key": "true",
@@ -1120,7 +1122,7 @@
                 "ActionTypeId": {
                   "Category": "Build",
                   "Owner": "Custom",
-                  "Version": "6",
+                  "Version": "9",
                   "Provider": {"Fn::Join" : ["", [{"Ref" : "CodeDeployAppName"}, "-Jenkins"]]}
                 },
                 "OutputArtifacts": [
@@ -1212,7 +1214,7 @@
                 "ActionTypeId": {
                   "Category": "Build",
                   "Owner": "Custom",
-                  "Version": "6",
+                  "Version": "9",
                   "Provider": {"Fn::Join" : ["", [{"Ref" : "CodeDeployAppName"}, "-Jenkins"]]}
                 },
                 "OutputArtifacts": [
