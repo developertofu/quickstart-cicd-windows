@@ -15,13 +15,13 @@
    <Target Name="Build">
       <Csc Sources="@(Compile)" OutputAssembly="bin/$(AssemblyName).dll" TargetType="library" Optimize="true" DebugType="pdbonly"/>
       <Exec Command="rd &quot;$(RootDir)$(ReleaseFolder)&quot; /s /q" Condition="Exists('$(RootDir)$(ReleaseFolder)')"/>
-      <MakeDir Directories="$(RootDir)$(ReleaseFolder) Condition="!Exists('$(RootDir)$(ReleaseFolder)')""/>
-      <MakeDir Directories="$(RootDir)$(ReleaseFolder)\temp" Condition="!Exists('$(RootDir)$(ReleaseFolder)\temp')"/>
+      <MakeDir Directories="$(RootDir)$(ReleaseFolder)" />
+      <MakeDir Directories="$(RootDir)$(ReleaseFolder)\temp"/>
       <AspNetCompiler VirtualPath="/" PhysicalPath="$(RootDir)$(SourceFolder)" TargetPath="$(RootDir)$(ReleaseFolder)\temp" Force="true" Debug="false" Clean="true" FixedNames="true" Updateable="false" />
       <Copy SourceFiles="$(RootDir)$(ReleaseFolder)\temp\bin\$(AssemblyName).dll" DestinationFolder="$(RootDir)$(ReleaseFolder)"/>
       <Copy SourceFiles="$(RootDir)$(ReleaseFolder)\temp\bin\$(AppWebDllName).compiled" DestinationFolder="$(RootDir)$(ReleaseFolder)"/>
       <Copy SourceFiles="$(RootDir)$(ReleaseFolder)\temp\bin\App_Web_$(AppWebDllName).dll" DestinationFolder="$(RootDir)$(ReleaseFolder)"/>
-      <MakeDir Directories="$(RootDir)$(ReleaseFolder)\Scripts" Condition="!Exists('$(RootDir)$(ReleaseFolder)\Scripts')"/>
+      <MakeDir Directories="$(RootDir)$(ReleaseFolder)\Scripts"/>
       <Copy SourceFiles="$(RootDir)$(SourceFolder)\appspec.yml" DestinationFolder="$(RootDir)$(ReleaseFolder)"/>
       <Copy SourceFiles="$(RootDir)$(ReleaseFolder)\temp\PrecompiledApp.config" DestinationFolder="$(RootDir)$(ReleaseFolder)"/>      
       <Copy SourceFiles="$(RootDir)$(ReleaseFolder)\temp\Default.aspx" DestinationFolder="$(RootDir)$(ReleaseFolder)"/>
