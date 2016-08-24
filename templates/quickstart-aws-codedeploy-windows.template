@@ -124,9 +124,14 @@
     "CreateMultipleCodeDeployServers" : { "Fn::Equals" : [ { "Ref" : "CodeDeployNumberOfServers" }, "2" ] }
   },
   "Mappings": {
+    "Constants": {
+      "InstanceValues":{
+        "CustomActionVersion": "11"
+      }
+    }, 
     "AWSAMIRegionMap": {
       "AMI": {
-        "WS2012R2": "Windows_Server-2012-R2_RTM-English-64Bit-Base-2016.06.15"
+        "WS2012R2": "Windows_Server-2012-R2_RTM-English-64Bit-Base-2016.08.11"
       },
       "ap-northeast-1": {
         "WS2012R2": "ami-7b62881a"
@@ -373,14 +378,17 @@
                 },
                 {
                   "Effect": "Allow",
-                  "Action": "s3:GetObject", 
+                  "Action": [
+                    "s3:Get*",
+                    "s3:List*"
+                  ], 
                   "Resource": [
                      { "Fn::Join" : ["", ["arn:aws:s3:::", { "Ref" : "SourceCodeBucket" }, "/*" ] ] },
                      { "Fn::Join" : ["", ["arn:aws:s3:::aws-codedeploy-",{ "Ref" : "AWS::Region" },"/*"] ] }
                    ]
                 },
                 {
-            		  "Action": [ "ec2:DescribeInstances","ec2:DescribeInstanceStatus"],
+            	  "Action": [ "ec2:DescribeInstances","ec2:DescribeInstanceStatus"],
                   "Resource": "*",
                   "Effect": "Allow"
                 }
@@ -462,7 +470,8 @@
               ],
               "Resource": [
                 { "Fn::Join" : ["", ["arn:aws:codedeploy:",{ "Ref" : "AWS::Region" },":",{ "Ref" : "AWS::AccountId" },":application:", { "Ref" : "CodeDeployAppName" }  ]  ] },
-                { "Fn::Join" : ["", ["arn:aws:codedeploy:",{ "Ref" : "AWS::Region" },":",{ "Ref" : "AWS::AccountId" },":application:", { "Ref" : "CodeDeployAppName" }, "/*"  ]  ] }
+                { "Fn::Join" : ["", ["arn:aws:codedeploy:",{ "Ref" : "AWS::Region" },":",{ "Ref" : "AWS::AccountId" },":deploymentgroup:", { "Ref" : "CodeDeployAppName" }, "/", { "Ref" : "CodeDeployDeploymentGroupName" }  ]  ] },
+                { "Fn::Join" : ["", ["arn:aws:codedeploy:",{ "Ref" : "AWS::Region" },":",{ "Ref" : "AWS::AccountId" },":deploymentconfig:*"  ]  ] }
               ],
               "Effect": "Allow"
             }
@@ -574,7 +583,9 @@
                             "<actionTypeProvider>",
                               {"Ref": "CodeDeployAppName"},
                             "-Jenkins</actionTypeProvider>",
-                            "<actionTypeVersion>9</actionTypeVersion>",
+                            "<actionTypeVersion>",
+                            { "Fn::FindInMap" : [ "Constants", "InstanceValues", "CustomActionVersion" ]},
+                            "</actionTypeVersion>",
                             "<region>",
                               {"Ref": "AWS::Region"},
                             "</region>",
@@ -1051,7 +1062,7 @@
       "Properties": {
         "Category": "Build",
         "Provider": {"Fn::Join" : ["", [{"Ref" : "CodeDeployAppName"}, "-Jenkins"]]},
-        "Version": "9",
+        "Version": { "Fn::FindInMap" : [ "Constants", "InstanceValues", "CustomActionVersion" ]},
         "ConfigurationProperties": [
           {
             "Key": "true",
@@ -1122,7 +1133,7 @@
                 "ActionTypeId": {
                   "Category": "Build",
                   "Owner": "Custom",
-                  "Version": "9",
+                  "Version": { "Fn::FindInMap" : [ "Constants", "InstanceValues", "CustomActionVersion" ]},
                   "Provider": {"Fn::Join" : ["", [{"Ref" : "CodeDeployAppName"}, "-Jenkins"]]}
                 },
                 "OutputArtifacts": [
@@ -1214,7 +1225,7 @@
                 "ActionTypeId": {
                   "Category": "Build",
                   "Owner": "Custom",
-                  "Version": "9",
+                  "Version": { "Fn::FindInMap" : [ "Constants", "InstanceValues", "CustomActionVersion" ]},
                   "Provider": {"Fn::Join" : ["", [{"Ref" : "CodeDeployAppName"}, "-Jenkins"]]}
                 },
                 "OutputArtifacts": [
