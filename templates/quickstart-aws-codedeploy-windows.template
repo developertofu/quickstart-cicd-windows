@@ -791,13 +791,13 @@
                     "config": {
                         "files": {
                             "C:\\cfn\\scripts\\Unzip-Archive.ps1": {
-                                "source": "https://s3.amazonaws.com/quickstart-reference/microsoft/sharepoint/latest/microsoft-utilities/scripts/Unzip-Archive.ps1"
+                                "source": "https://s3.amazonaws.com/quickstart-reference/cicd/windows/latest/submodules/quickstart-microsoft-utilities/scripts/Unzip-Archive.ps1"
                             },
                             "C:\\cfn\\modules\\AWSQuickStart.zip": {
-                                "source": "https://s3.amazonaws.com/quickstart-reference/microsoft/sharepoint/latest/microsoft-utilities/modules/AWSQuickStart.zip"
+                                "source": "https://s3.amazonaws.com/quickstart-reference/cicd/windows/latest/submodules/quickstart-microsoft-utilities/modules/AWSQuickStart.zip"
                             },
                             "c:\\cfn\\scripts\\Download-File.ps1": {
-                                "source": "https://s3.amazonaws.com/quickstart-reference/microsoft/sharepoint/latest/microsoft-utilities/scripts/Download-File.ps1"
+                                "source": "https://s3.amazonaws.com/quickstart-reference/cicd/windows/latest/submodules/quickstart-microsoft-utilities/scripts/Download-File.ps1"
                             },
                             "c:\\cfn\\scripts\\Install-DotNetBuildServer-Jenkins.ps1": {
                                 "source": "https://s3.amazonaws.com/tomfullershare/Install-DotNetBuildServer-Jenkins.ps1"
@@ -1144,13 +1144,13 @@
                     "config": {
                         "files": {
                             "C:\\cfn\\scripts\\Unzip-Archive.ps1": {
-                                "source": "https://s3.amazonaws.com/quickstart-reference/microsoft/sharepoint/latest/microsoft-utilities/scripts/Unzip-Archive.ps1"
+                                "source": "https://s3.amazonaws.com/quickstart-reference/cicd/windows/latest/submodules/quickstart-microsoft-utilities/scripts/Unzip-Archive.ps1"
                             },
                             "C:\\cfn\\modules\\AWSQuickStart.zip": {
-                                "source": "https://s3.amazonaws.com/quickstart-reference/microsoft/sharepoint/latest/microsoft-utilities/modules/AWSQuickStart.zip"
+                                "source": "https://s3.amazonaws.com/quickstart-reference/cicd/windows/latest/submodules/quickstart-microsoft-utilities/modules/AWSQuickStart.zip"
                             },
                             "c:\\cfn\\scripts\\Download-File.ps1": {
-                                "source": "https://s3.amazonaws.com/quickstart-reference/microsoft/sharepoint/latest/microsoft-utilities/scripts/Download-File.ps1"
+                                "source": "https://s3.amazonaws.com/quickstart-reference/cicd/windows/latest/submodules/quickstart-microsoft-utilities/scripts/Download-File.ps1"
                             },
                             "c:\\cfn\\scripts\\Install-CodeDeploy.ps1": {
                                 "source": "https://s3.amazonaws.com/tomfullershare/Install-CodeDeploy.ps1"
@@ -1289,13 +1289,13 @@
                     "config": {
                         "files": {
                             "C:\\cfn\\scripts\\Unzip-Archive.ps1": {
-                                "source": "https://s3.amazonaws.com/quickstart-reference/microsoft/sharepoint/latest/microsoft-utilities/scripts/Unzip-Archive.ps1"
+                                "source": "https://s3.amazonaws.com/quickstart-reference/cicd/windows/latest/submodules/quickstart-microsoft-utilities/scripts/Unzip-Archive.ps1"
                             },
                             "C:\\cfn\\modules\\AWSQuickStart.zip": {
-                                "source": "https://s3.amazonaws.com/quickstart-reference/microsoft/sharepoint/latest/microsoft-utilities/modules/AWSQuickStart.zip"
+                                "source": "https://s3.amazonaws.com/quickstart-reference/cicd/windows/latest/submodules/quickstart-microsoft-utilities/modules/AWSQuickStart.zip"
                             },
                             "c:\\cfn\\scripts\\Download-File.ps1": {
-                                "source": "https://s3.amazonaws.com/quickstart-reference/microsoft/sharepoint/latest/microsoft-utilities/scripts/Download-File.ps1"
+                                "source": "https://s3.amazonaws.com/quickstart-reference/cicd/windows/latest/submodules/quickstart-microsoft-utilities/scripts/Download-File.ps1"
                             },
                             "c:\\cfn\\scripts\\Install-CodeDeploy.ps1": {
                                 "source": "https://s3.amazonaws.com/tomfullershare/Install-CodeDeploy.ps1"
