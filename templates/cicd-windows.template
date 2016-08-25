@@ -2,34 +2,22 @@
     "AWSTemplateFormatVersion": "2010-09-09",
     "Description": "This template will create a Windows build server that has MSBuild pre-installed and configures CodeDeploy deployments through S3 to 1 or more CodeDeploy servers. **WARNING** This template creates AWS resources. You will be billed for the AWS resources used if you create a stack.",
     "Parameters": {
-        "KeyPairName": {
-            "Description": "Name of an existing EC2 KeyPair to enable SSH access to the instances",
-            "Type": "AWS::EC2::KeyPair::KeyName"
-        },
-        "DemoAppDBUserName": {
-            "Default": "awsuser",
-            "Description": "The database admin account username",
-            "Type": "String",
+        "CodeDeployAppName": {
+            "AllowedPattern": "[-_a-zA-Z0-9]*",
+            "ConstraintDescription": "can contain only alphanumeric characters, dashes, and underscores.",
+            "Default": "DemoApp",
+            "Description": "Application name that will be used by CodeDeploy.",
+            "MaxLength": "100",
             "MinLength": "1",
-            "MaxLength": "16",
-            "AllowedPattern": "[a-zA-Z][a-zA-Z0-9]*",
-            "ConstraintDescription": "must begin with a letter and contain only alphanumeric characters."
+            "Type": "String"
         },
-        "DemoAppDBPassword": {
-            "NoEcho": "true",
-            "Description": "The database admin account password",
-            "Type": "String",
-            "MinLength": "8",
-            "MaxLength": "41",
-            "ConstraintDescription": "Minimum of 8 characters"
-        },
-        "DemoAppInclude": {
-            "AllowedValues": [
-                "yes",
-                "no"
-            ],
-            "Default": "yes",
-            "Description": "To include a demo application that will be used to build and deploy for testing.",
+        "CodeDeployDeploymentGroupName": {
+            "AllowedPattern": "[-_a-zA-Z0-9]*",
+            "ConstraintDescription": "can contain only alphanumeric lower case characters, dashes, and underscores.",
+            "Default": "DemoApp-DG",
+            "Description": "DeploymentGroup name that will be used by CodeDeploy.",
+            "MaxLength": "100",
+            "MinLength": "1",
             "Type": "String"
         },
         "CodeDeployNumberOfServers": {
@@ -41,21 +29,58 @@
             "Description": "Choose how many test servers you want to deploy with CodeDeploy.",
             "Type": "String"
         },
-        "VPC": {
-            "Description": "ID of the VPC (e.g., vpc-0343606e)",
-            "Type": "AWS::EC2::VPC::Id"
-        },
-        "VPCCIDR": {
-            "Description": "CIDR block for the VPC",
+        "DemoAppDBPassword": {
+            "ConstraintDescription": "Minimum of 8 characters",
+            "Description": "The database admin account password",
+            "MaxLength": "41",
+            "MinLength": "8",
+            "NoEcho": "true",
             "Type": "String"
         },
-        "PublicSubnet1": {
-            "Description": "ID of the public subnet you want to provision resources to that can be accessed from the public internet",
-            "Type": "AWS::EC2::Subnet::Id"
+        "DemoAppDBUserName": {
+            "AllowedPattern": "[a-zA-Z][a-zA-Z0-9]*",
+            "ConstraintDescription": "must begin with a letter and contain only alphanumeric characters.",
+            "Default": "awsuser",
+            "Description": "The database admin account username",
+            "MaxLength": "16",
+            "MinLength": "1",
+            "Type": "String"
         },
-        "PublicSubnet2": {
-            "Description": "ID of the public subnet you want to provision resources to that can be accessed from the public internet",
-            "Type": "AWS::EC2::Subnet::Id"
+        "DemoAppInclude": {
+            "AllowedValues": [
+                "yes",
+                "no"
+            ],
+            "Default": "yes",
+            "Description": "To include a demo application that will be used to build and deploy for testing.",
+            "Type": "String"
+        },
+        "JenkinsPassword": {
+            "ConstraintDescription": "Minimum of 8 characters",
+            "Description": "The password for the Jenkins user.",
+            "MaxLength": "41",
+            "MinLength": "8",
+            "NoEcho": "true",
+            "Type": "String"
+        },
+        "JenkinsUserName": {
+            "AllowedPattern": "[a-zA-Z][a-zA-Z0-9]*",
+            "ConstraintDescription": "must begin with a letter and contain only alphanumeric characters.",
+            "Default": "JenkinsUser",
+            "Description": "This account will be given access to Jenkins to configure and run builds.",
+            "MaxLength": "16",
+            "MinLength": "1",
+            "Type": "String"
+        },
+        "KeyPairName": {
+            "Description": "Name of an existing EC2 KeyPair to enable SSH access to the instances",
+            "Type": "AWS::EC2::KeyPair::KeyName"
+        },
+        "MSBuildProjectOrSolutionFileName": {
+            "Description": "We need the path inside of your code archive to the .proj or .sln file used to drive the MSBuild step in Jenkins.",
+            "MaxLength": "100",
+            "MinLength": "1",
+            "Type": "String"
         },
         "PrivateSubnet1": {
             "Description": "ID of the private subnet you want to provision resources to that can only be accessed through a gateway",
@@ -65,62 +90,51 @@
             "Description": "ID of the private subnet you want to provision resources to that can only be accessed through a gateway",
             "Type": "AWS::EC2::Subnet::Id"
         },
+        "PublicSubnet1": {
+            "Description": "ID of the public subnet you want to provision resources to that can be accessed from the public internet",
+            "Type": "AWS::EC2::Subnet::Id"
+        },
+        "PublicSubnet2": {
+            "Description": "ID of the public subnet you want to provision resources to that can be accessed from the public internet",
+            "Type": "AWS::EC2::Subnet::Id"
+        },
+        "QSS3BucketName": {
+            "AllowedPattern": "^[0-9a-zA-Z]+([0-9a-zA-Z-]*[0-9a-zA-Z])*$",
+            "ConstraintDescription": "Quick Start bucket name can include numbers, lowercase letters, uppercase letters, and hyphens (-). It cannot start or end with a hyphen (-).",
+            "Default": "quickstart-reference",
+            "Description": "S3 bucket name for the Quick Start assets. Quick Start bucket name can include numbers, lowercase letters, uppercase letters, and hyphens (-). It cannot start or end with a hyphen (-).",
+            "Type": "String"
+        },
+        "QSS3KeyPrefix": {
+            "AllowedPattern": "^[0-9a-zA-Z-]+(/[0-9a-zA-Z-]+)*$",
+            "ConstraintDescription": "Quick Start key prefix can include numbers, lowercase letters, uppercase letters, hyphens (-), and forward slash (/). It cannot start or end with forward slash (/) because they are automatically appended.",
+            "Default": "cicd/windows/latest",
+            "Description": "S3 key prefix for the Quick Start assets. Quick Start key prefix can include numbers, lowercase letters, uppercase letters, hyphens (-), and forward slash (/). It cannot start or end with forward slash (/) because they are automatically appended.",
+            "Type": "String"
+        },
         "RDGWSecurityGroup": {
             "Description": "ID of the security group for remote access gateways that can access the build server and code deploy servers",
             "Type": "AWS::EC2::SecurityGroup::Id"
         },
-        "CodeDeployAppName": {
-            "Description": "Application name that will be used by CodeDeploy.",
-            "Default": "DemoApp",
-            "Type": "String",
-            "MinLength": "1",
+        "ReleaseFolder": {
+            "Description": "This release folder can be used by the Jenkins job to only copy the binaries to the test server. All content copied into this folder will be zipped and shipped via CodeDeploy.",
             "MaxLength": "100",
-            "AllowedPattern": "[-_a-zA-Z0-9]*",
-            "ConstraintDescription": "can contain only alphanumeric characters, dashes, and underscores."
+            "MinLength": "1",
+            "Type": "String"
         },
         "SourceFolder": {
             "Description": "This will be used to find the path to the source code to build after it is unzipped. *NOTE: You must include the root folder form the zip file in your path and use a backslash between folders.",
-            "Type": "String",
-            "MinLength": "1",
-            "MaxLength": "100"
-        },
-        "ReleaseFolder": {
-            "Description": "This release folder can be used by the Jenkins job to only copy the binaries to the test server. All content copied into this folder will be zipped and shipped via CodeDeploy.",
-            "Type": "String",
-            "MinLength": "1",
-            "MaxLength": "100"
-        },
-        "MSBuildProjectOrSolutionFileName": {
-            "Description": "We need the path inside of your code archive to the .proj or .sln file used to drive the MSBuild step in Jenkins.",
-            "Type": "String",
-            "MinLength": "1",
-            "MaxLength": "100"
-        },
-        "JenkinsUserName": {
-            "Default": "JenkinsUser",
-            "Description": "This account will be given access to Jenkins to configure and run builds.",
-            "Type": "String",
-            "MinLength": "1",
-            "MaxLength": "16",
-            "AllowedPattern": "[a-zA-Z][a-zA-Z0-9]*",
-            "ConstraintDescription": "must begin with a letter and contain only alphanumeric characters."
-        },
-        "JenkinsPassword": {
-            "NoEcho": "true",
-            "Description": "The password for the Jenkins user.",
-            "Type": "String",
-            "MinLength": "8",
-            "MaxLength": "41",
-            "ConstraintDescription": "Minimum of 8 characters"
-        },
-        "CodeDeployDeploymentGroupName": {
-            "Description": "DeploymentGroup name that will be used by CodeDeploy.",
-            "Default": "DemoApp-DG",
-            "Type": "String",
-            "MinLength": "1",
             "MaxLength": "100",
-            "AllowedPattern": "[-_a-zA-Z0-9]*",
-            "ConstraintDescription": "can contain only alphanumeric lower case characters, dashes, and underscores."
+            "MinLength": "1",
+            "Type": "String"
+        },
+        "VPC": {
+            "Description": "ID of the VPC (e.g., vpc-0343606e)",
+            "Type": "AWS::EC2::VPC::Id"
+        },
+        "VPCCIDR": {
+            "Description": "CIDR block for the VPC",
+            "Type": "String"
         }
     },
     "Conditions": {
@@ -199,6 +213,56 @@
             },
             "us-west-2": {
                 "WS2012R2": "ami-8d0acfed"
+            }
+        },
+        "AWSInfoRegionMap": {
+            "ap-northeast-1": {
+                "Partition": "aws",
+                "QuickStartS3URL": "https://s3.amazonaws.com"
+            },
+            "ap-northeast-2": {
+                "Partition": "aws",
+                "QuickStartS3URL": "https://s3.amazonaws.com"
+            },
+            "ap-south-1": {
+                "Partition": "aws",
+                "QuickStartS3URL": "https://s3.amazonaws.com"
+            },
+            "ap-southeast-1": {
+                "Partition": "aws",
+                "QuickStartS3URL": "https://s3.amazonaws.com"
+            },
+            "ap-southeast-2": {
+                "Partition": "aws",
+                "QuickStartS3URL": "https://s3.amazonaws.com"
+            },
+            "eu-central-1": {
+                "Partition": "aws",
+                "QuickStartS3URL": "https://s3.amazonaws.com"
+            },
+            "eu-west-1": {
+                "Partition": "aws",
+                "QuickStartS3URL": "https://s3.amazonaws.com"
+            },
+            "sa-east-1": {
+                "Partition": "aws",
+                "QuickStartS3URL": "https://s3.amazonaws.com"
+            },
+            "us-east-1": {
+                "Partition": "aws",
+                "QuickStartS3URL": "https://s3.amazonaws.com"
+            },
+            "us-gov-west-1": {
+                "Partition": "aws-us-gov",
+                "QuickStartS3URL": "https://s3-us-gov-west-1.amazonaws.com"
+            },
+            "us-west-1": {
+                "Partition": "aws",
+                "QuickStartS3URL": "https://s3.amazonaws.com"
+            },
+            "us-west-2": {
+                "Partition": "aws",
+                "QuickStartS3URL": "https://s3.amazonaws.com"
             }
         }
     },
