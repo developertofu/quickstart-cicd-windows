@@ -6,16 +6,40 @@
             "ParameterGroups": [
                 {
                     "Label": {
-                        "default": "Network Configuration with Remote Gateway"
+                        "default": "Network Configuration"
                     },
                     "Parameters": [
                         "AvailabilityZones",
+                        "VPCCIDR",
+                        "PrivateSubnet1CIDR",
+                        "PrivateSubnet2CIDR",
+                        "PublicSubnet1CIDR",
+                        "PublicSubnet2CIDR",
+                        "RDGWCIDR"
+                    ]
+                },
+                {
+                    "Label": {
+                        "default": "Amazon EC2 Configuration"
+                    },
+                    "Parameters": [
                         "KeyPairName",
                         "NATInstanceType",
-                        "RDGWInstanceType",
-                        "RDGWCIDR",
+                        "RDGW1NetBIOSName",
+                        "RDGW1PrivateIP",
+                        "RDGW2NetBIOSName",
+                        "RDGW2PrivateIP",
+                        "RDGWInstanceType"
+                    ]
+                },
+                {
+                    "Label": {
+                        "default": "Microsoft Remote Desktop Gateway Configuration"
+                    },
+                    "Parameters": [
                         "AdminUser",
-                        "AdminPassword"
+                        "AdminPassword",
+                        "DomainDNSName"
                     ]
                 },
                 {
@@ -42,29 +66,26 @@
                         "ReleaseFolder",
                         "MSBuildProjectOrSolutionFileName"
                     ]
+                },
+                {
+                    "Label": {
+                        "default": "AWS Quick Start Configuration"
+                    },
+                    "Parameters": [
+                        "QSS3BucketName",
+                        "QSS3KeyPrefix"
+                    ]
                 }
             ],
             "ParameterLabels": {
-                "AvailabilityZones": {
-                    "default": "Choose 2 availability zones to deploy to."
-                },
-                "KeyPairName": {
-                    "default": "Key pair name"
-                },
-                "NATInstanceType": {
-                    "default": "NAT instance type"
-                },
-                "RDGWInstanceType": {
-                    "default": "Remote Desktop Gateway instance type"
-                },
-                "RDGWCIDR": {
-                    "default": "Allowed Remote Desktop Gateway External Access CIDR"
+                "AdminPassword": {
+                    "default": "Admin Password"
                 },
                 "AdminUser": {
-                    "default": "Remote Desktop Gateway Admin user name"
+                    "default": "Admin User Name"
                 },
-                "AdminPassword": {
-                    "default": "Remote Desktop Gateway Admin user password"
+                "AvailabilityZones": {
+                    "default": "Availability Zones"
                 },
                 "CodeDeployAppName": {
                     "default": "Application name that will be used by CodeDeploy."
@@ -75,29 +96,77 @@
                 "CodeDeployNumberOfServers": {
                     "default": "Choose the number of CodeDeploy test servers you want to deploy"
                 },
-                "DemoAppInclude": {
-                    "default": "Choose whether or not you want to deploy the demo application"
+                "DemoAppDBPassword": {
+                    "default": "Password for the user account that is used by the demo app"
                 },
                 "DemoAppDBUserName": {
                     "default": "Username to login to the database server for the demo app"
                 },
-                "DemoAppDBPassword": {
-                    "default": "Password for the user account that is used by the demo app"
+                "DemoAppInclude": {
+                    "default": "Choose whether or not you want to deploy the demo application"
                 },
-                "JenkinsUserName": {
-                    "default": "This user will be created in Jenkins so you can manage your Jenkins build jobs"
+                "DomainDNSName": {
+                    "default": "Domain DNS Name"
                 },
                 "JenkinsPassword": {
                     "default": "This is the password for the Jenkins user you created"
                 },
-                "SourceFolder": {
-                    "default": "Inside of your code zip package you need to give the detailed path to the source code you want to build. *NOTE: You must include the root folder form the zip file in your path and use a backslash between folders."
+                "JenkinsUserName": {
+                    "default": "This user will be created in Jenkins so you can manage your Jenkins build jobs"
+                },
+                "KeyPairName": {
+                    "default": "Key Pair Name"
+                },
+                "MSBuildProjectOrSolutionFileName": {
+                    "default": "Inside of your SourceFolder there will be either a project or solution file that will describe how you want MSBuild to be run and potentially packaged and released to the ReleaseFolder"
+                },
+                "NATInstanceType": {
+                    "default": "NAT Instance Type"
+                },
+                "PrivateSubnet1CIDR": {
+                    "default": "Private Subnet 1 CIDR"
+                },
+                "PrivateSubnet2CIDR": {
+                    "default": "Private Subnet 2 CIDR"
+                },
+                "PublicSubnet1CIDR": {
+                    "default": "Public Subnet 1 CIDR"
+                },
+                "PublicSubnet2CIDR": {
+                    "default": "Public Subnet 2 CIDR"
+                },
+                "QSS3BucketName": {
+                    "default": "Quick Start S3 Bucket Name"
+                },
+                "QSS3KeyPrefix": {
+                    "default": "Quick Start S3 Key Prefix"
+                },
+                "RDGW1NetBIOSName": {
+                    "default": "Remote Desktop Gateway 1 NetBIOS Name"
+                },
+                "RDGW1PrivateIP": {
+                    "default": "Remote Desktop Gateway 1 Private IP Address"
+                },
+                "RDGW2NetBIOSName": {
+                    "default": "Remote Desktop Gateway 2 NetBIOS Name"
+                },
+                "RDGW2PrivateIP": {
+                    "default": "Remote Desktop Gateway 2 Private IP Address"
+                },
+                "RDGWCIDR": {
+                    "default": "Allowed Remote Desktop Gateway External Access CIDR"
+                },
+                "RDGWInstanceType": {
+                    "default": "Remote Desktop Gateway Instance Type"
                 },
                 "ReleaseFolder": {
                     "default": "In order to package up your release you need to specify a folder where the binaries and config information can be zipped for CodeDeploy"
                 },
-                "MSBuildProjectOrSolutionFileName": {
-                    "default": "Inside of your SourceFolder there will be either a project or solution file that will describe how you want MSBuild to be run and potentially packaged and released to the ReleaseFolder"
+                "SourceFolder": {
+                    "default": "Inside of your code zip package you need to give the detailed path to the source code you want to build. *NOTE: You must include the root folder form the zip file in your path and use a backslash between folders."
+                },
+                "VPCCIDR": {
+                    "default": "VPC CIDR"
                 }
             }
         }
