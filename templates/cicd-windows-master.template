@@ -109,15 +109,15 @@
                 "DomainDNSName": {
                     "default": "Domain DNS Name"
                 },
+                "ELBServerCertificateName":{
+                    "default": "This is the name of the certificate that will be created and used by the ELB for the web applications deployed to the build and test servers."
+                }, 
                 "JenkinsPassword": {
                     "default": "This is the password for the Jenkins user you created"
                 },
                 "JenkinsUserName": {
                     "default": "This user will be created in Jenkins so you can manage your Jenkins build jobs"
                 },
-                "ELBServerCertificateName":{
-                    "default": "This is the name of the certificate that will be created and used by the ELB for the web applications deployed to the build and test servers."
-                }, 
                 "KeyPairName": {
                     "default": "Key Pair Name"
                 },
@@ -258,7 +258,7 @@
             "MaxLength": "25",
             "AllowedPattern": "[a-zA-Z0-9]+\\..+"
         },
-        "ELBServerCertificiateName": {
+        "ELBServerCertificateName": {
             "AllowedPattern": "[-a-zA-Z0-9]*",
             "ConstraintDescription": "can only contain alphanumeric characters and dashes.",
             "Description": "This is the name of the certificate that will be created and used by the ELB for the web applications deployed to the build and test servers.",
@@ -400,7 +400,7 @@
             "Type": "String"
         },
         "SourceFolder": {
-            "Description": "This will be used to find the path to the source code to build after it is unzipped. *NOTE: You must include the root folder form the zip file in your path and use a backslash between folders.",
+            "Description": "This will be used to find the path to the source code to build after it is unzipped. *NOTE: You must include the root folder from the zip file in your path and use a backslash between folders.",
             "MaxLength": "100",
             "MinLength": "1",
             "Type": "String"
@@ -549,7 +549,6 @@
                             {
                                 "Ref": "QSS3KeyPrefix"
                             },
-                            "submodules/quickstart-microsoft-rdgateway",
                             "templates/rdgw-standalone.template"
                         ]
                     ]
@@ -668,6 +667,9 @@
                     },
                     "DemoAppInclude": {
                         "Ref": "DemoAppInclude"
+                    },
+                    "ELBServerCertificateName": {
+                        "Ref": "ELBServerCertificateName"
                     },
                     "JenkinsPassword": {
                         "Ref": "JenkinsPassword"

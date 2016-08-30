@@ -131,7 +131,7 @@
             "Type": "String"
         },
         "SourceFolder": {
-            "Description": "This will be used to find the path to the source code to build after it is unzipped. *NOTE: You must include the root folder form the zip file in your path and use a backslash between folders.",
+            "Description": "This will be used to find the path to the source code to build after it is unzipped. *NOTE: You must include the root folder from the zip file in your path and use a backslash between folders.",
             "MaxLength": "100",
             "MinLength": "1",
             "Type": "String"
