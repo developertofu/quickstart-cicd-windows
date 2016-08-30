@@ -29,6 +29,15 @@
             "Description": "Choose how many test servers you want to deploy with CodeDeploy.",
             "Type": "String"
         },
+        "ELBServerCertificiateName": {
+            "AllowedPattern": "[-a-zA-Z0-9]*",
+            "ConstraintDescription": "can only contain alphanumeric characters and dashes.",
+            "Default": "QuickStart-DotNetPipeline-ELBCert",
+            "Description": "This is the name of the certificate that will be created and used by the ELB for the web applications deployed to the build and test servers.",
+            "MaxLength": "16",
+            "MinLength": "1",
+            "Type": "String"
+        },
         "DemoAppDBPassword": {
             "ConstraintDescription": "Minimum of 8 characters",
             "Description": "The database admin account password",
@@ -416,8 +425,8 @@
                 "SecurityGroupIngress": [
                     {
                         "IpProtocol": "tcp",
-                        "FromPort": "80",
-                        "ToPort": "80",
+                        "FromPort": "443",
+                        "ToPort": "443",
                         "CidrIp": "0.0.0.0/0"
                     }
                 ]
@@ -433,8 +442,8 @@
                 "SecurityGroupIngress": [
                     {
                         "IpProtocol": "tcp",
-                        "FromPort": "80",
-                        "ToPort": "80",
+                        "FromPort": "443",
+                        "ToPort": "443",
                         "CidrIp": "0.0.0.0/0"
                     }
                 ]
@@ -473,7 +482,8 @@
                                         "codepipeline:GetJobDetails",
                                         "codepipeline:PollForJobs",
                                         "codepipeline:PutJobFailureResult",
-                                        "codepipeline:PutJobSuccessResult"
+                                        "codepipeline:PutJobSuccessResult",
+                                        "iam:UploadServerCertificate"
                                     ],
                                     "Resource": "*"
                                 }
@@ -866,6 +876,9 @@
                             "c:\\cfn\\scripts\\Install-DotNetBuildServer-Jenkins.ps1": {
                                 "source": "https://s3.amazonaws.com/tomfullershare/Install-DotNetBuildServer-Jenkins.ps1"
                             },
+                            "c:\\cfn\\scripts\\New-ServerCertificateForELB.ps1": {
+                                "source": "https://s3.amazonaws.com/tomfullershare/New-ServerCertificateForELB.ps1"
+                            },
                             "c:\\cfn\\scripts\\create-jenkins-user.groovy": {
                                 "content": {
                                     "Fn::Join": [
@@ -1133,7 +1146,35 @@
                                 },
                                 "waitAfterCompletion": 0
                             },
-                            "k-signal-success": {
+                            "k-download-bouncycastle": {
+                                "command": {
+                                    "Fn::Join": [
+                                        "",
+                                        [
+                                            "powershell.exe -Command \"C:\\cfn\\scripts\\Download-File.ps1 -Source '",
+                                            "https://www.bouncycastle.org/csharp/download/bccrypto-csharp-1.8.1-bin.zip",
+                                            "' -Destination 'C:\\cfn\\downloads\\BouncyCastle.Crypto.dll'\""
+                                        ]
+                                    ]
+                                },
+                                "waitAfterCompletion": "0"
+                            },
+                            "l-create-server-certificate-for-elb": {
+                                "command": {
+                                    "Fn::Join": [
+                                        "",
+                                        [
+                                            "powershell.exe -Command \"C:\\cfn\\Scripts\\New-ServerCertificateForELB.ps1 -ServerCertificateName '",
+                                            {
+                                                "Ref": "ELBServerCertificiateName"
+                                            },
+                                            "'\""
+                                        ]
+                                    ]
+                                },
+                                "waitAfterCompletion": 0
+                            },
+                            "m-signal-success": {
                                 "command": "powershell.exe -Command \"Write-AWSQuickStartStatus\"",
                                 "waitAfterCompletion": 0
                             }
@@ -1142,7 +1183,7 @@
                 }
             },
             "Properties": {
-                "InstanceType": "t2.large",
+                "InstanceType": "t2.medium",
                 "SecurityGroupIds": [
                     {
                         "Ref": "BuildServerSecurityGroup"
@@ -1523,9 +1564,25 @@
                 },
                 "Listeners": [
                     {
-                        "LoadBalancerPort": "80",
+                        "LoadBalancerPort": "443",
                         "InstancePort": "80",
-                        "Protocol": "TCP"
+                        "Protocol": "HTTPS",
+                        "InstanceProtocol": "HTTP",
+                        "SSLCertificateId": {
+                          "Fn::Join": [
+                            "",
+                            [
+                               "arn:aws:iam::",
+                               {
+                                  "Ref": "AWS::AccountId"
+                               },
+                               ":server-certificate/",
+                               {
+                                  "Ref": "ELBServerCertificateName"
+                               }
+                             ]
+                           ]
+                        }      
                     }
                 ],
                 "SecurityGroups": [
@@ -1562,9 +1619,25 @@
                 ],
                 "Listeners": [
                     {
-                        "LoadBalancerPort": "80",
+                        "LoadBalancerPort": "443",
                         "InstancePort": "8080",
-                        "Protocol": "TCP"
+                        "Protocol": "HTTPS",
+                        "InstanceProtocol": "HTTP",
+                        "SSLCertificateId": {
+                          "Fn::Join": [
+                            "",
+                            [
+                               "arn:aws:iam::",
+                               {
+                                  "Ref": "AWS::AccountId"
+                               },
+                               ":server-certificate/",
+                               {
+                                  "Ref": "ELBServerCertificateName"
+                               }
+                             ]
+                           ]
+                        }      
                     }
                 ],
                 "SecurityGroups": [
@@ -1627,7 +1700,7 @@
                         "Fn::Join": [
                             "",
                             [
-                                "http://",
+                                "https://",
                                 {
                                     "Fn::GetAtt": [
                                         "BuildServerELB",
@@ -1642,7 +1715,7 @@
                         "Fn::Join": [
                             "",
                             [
-                                "http://",
+                                "https://",
                                 {
                                     "Fn::GetAtt": [
                                         "BuildServerELB",
