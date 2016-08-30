@@ -258,6 +258,14 @@
             "MaxLength": "25",
             "AllowedPattern": "[a-zA-Z0-9]+\\..+"
         },
+        "ELBServerCertificiateName": {
+            "AllowedPattern": "[-a-zA-Z0-9]*",
+            "ConstraintDescription": "can only contain alphanumeric characters and dashes.",
+            "Description": "This is the name of the certificate that will be created and used by the ELB for the web applications deployed to the build and test servers.",
+            "MaxLength": "16",
+            "MinLength": "1",
+            "Type": "String"
+        },
         "JenkinsPassword": {
             "ConstraintDescription": "Minimum of 8 characters",
             "Description": "The password for the Jenkins user.",
@@ -271,15 +279,6 @@
             "ConstraintDescription": "must begin with a letter and contain only alphanumeric characters.",
             "Default": "JenkinsUser",
             "Description": "This account will be given access to Jenkins to configure and run builds.",
-            "MaxLength": "16",
-            "MinLength": "1",
-            "Type": "String"
-        },
-        "ELBServerCertificiateName": {
-            "AllowedPattern": "[-a-zA-Z0-9]*",
-            "ConstraintDescription": "can only contain alphanumeric characters and dashes.",
-            "Default": "QuickStart-DotNetPipeline-ELBCert",
-            "Description": "This is the name of the certificate that will be created and used by the ELB for the web applications deployed to the build and test servers.",
             "MaxLength": "16",
             "MinLength": "1",
             "Type": "String"
