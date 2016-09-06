@@ -549,6 +549,7 @@
                             {
                                 "Ref": "QSS3KeyPrefix"
                             },
+                            "submodules/quickstart-microsoft-rdgateway",
                             "templates/rdgw-standalone.template"
                         ]
                     ]
