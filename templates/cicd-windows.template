@@ -59,7 +59,7 @@
             "AllowedPattern": "[-a-zA-Z0-9]*",
             "ConstraintDescription": "can only contain alphanumeric characters and dashes.",
             "Description": "This is the name of the certificate that will be created and used by the ELB for the web applications deployed to the build and test servers.",
-            "MaxLength": "16",
+            "MaxLength": "64",
             "MinLength": "1",
             "Type": "String"
         },
