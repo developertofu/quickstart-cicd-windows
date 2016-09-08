@@ -182,7 +182,7 @@
     "Mappings": {
         "Constants": {
             "InstanceValues": {
-                "CustomActionVersion": "12"
+                "CustomActionVersion": "13"
             }
         },
         "AWSAMIRegionMap": {
