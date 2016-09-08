@@ -1304,13 +1304,17 @@
                                         [
                                             "powershell.exe -Command \"C:\\cfn\\scripts\\Download-File.ps1 -Source '",
                                             "https://www.bouncycastle.org/csharp/download/bccrypto-csharp-1.8.1-bin.zip",
-                                            "' -Destination 'C:\\cfn\\downloads\\BouncyCastle.Crypto.dll'\""
+                                            "' -Destination 'C:\\cfn\\downloads\\BouncyCastle.Crypto.zip'\""
                                         ]
                                     ]
                                 },
                                 "waitAfterCompletion": "0"
                             },
-                            "l-create-server-certificate-for-elb": {
+                            "l-unpack-bouncycastle": {
+                                "command": "powershell.exe -Command C:\\cfn\\scripts\\Unzip-Archive.ps1 -Source C:\\cfn\\downloads\\BouncyCastle.Crypto.zip -Destination C:\\cfn\\downloads\\",
+                                "waitAfterCompletion": "0"
+                            },
+                            "m-create-server-certificate-for-elb": {
                                 "command": {
                                     "Fn::Join": [
                                         "",
@@ -1325,7 +1329,7 @@
                                 },
                                 "waitAfterCompletion": 0
                             },
-                            "m-signal-success": {
+                            "n-signal-success": {
                                 "command": "powershell.exe -Command \"Write-AWSQuickStartStatus\"",
                                 "waitAfterCompletion": 0
                             }
