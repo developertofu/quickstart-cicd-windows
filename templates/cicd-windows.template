@@ -55,7 +55,7 @@
             "Description": "To include a demo application that will be used to build and deploy for testing.",
             "Type": "String"
         },
-        "ELBServerCertificiateName": {
+        "ELBServerCertificateName": {
             "AllowedPattern": "[-a-zA-Z0-9]*",
             "ConstraintDescription": "can only contain alphanumeric characters and dashes.",
             "Description": "This is the name of the certificate that will be created and used by the ELB for the web applications deployed to the build and test servers.",
@@ -1004,7 +1004,6 @@
                                         ]
                                     ]
                                 }
-                            }
                             },
                             "c:\\cfn\\scripts\\New-ServerCertificateForELB.ps1": {
                                 "source": {
@@ -1318,7 +1317,7 @@
                                         [
                                             "powershell.exe -Command \"C:\\cfn\\Scripts\\New-ServerCertificateForELB.ps1 -ServerCertificateName '",
                                             {
-                                                "Ref": "ELBServerCertificiateName"
+                                                "Ref": "ELBServerCertificateName"
                                             },
                                             "'\""
                                         ]
@@ -2108,18 +2107,15 @@
                                     }
                                 ],
                                 "Configuration": {
-                                    "S3Bucket": { "Ref" : "QSS3BucketName"},
+                                    "S3Bucket": { "Ref" : "QSS3BucketName" },
                                     "S3ObjectKey": {
                                     	"Fn::Join": [
-                                        "/",
-                                        [
-                                            {
-                                                "Ref": "QSS3KeyPrefix"
-                                            },
-                                            "demo-assets/DemoApp.zip"
-                                        ]
-                                    ]
-                                      
+	                                        "/",
+	                                        [
+	                                            {"Ref": "QSS3KeyPrefix"},
+	                                            "demo-assets/DemoApp.zip"
+	                                        ]
+	                                    ] 
                                     }
                                 },
                                 "RunOrder": 1
