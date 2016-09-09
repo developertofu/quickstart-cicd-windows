@@ -182,7 +182,7 @@
     "Mappings": {
         "Constants": {
             "InstanceValues": {
-                "CustomActionVersion": "13"
+                "CustomActionVersion": "14"
             }
         },
         "AWSAMIRegionMap": {
@@ -482,7 +482,8 @@
                                         "codepipeline:PollForJobs",
                                         "codepipeline:PutJobFailureResult",
                                         "codepipeline:PutJobSuccessResult",
-                                        "iam:UploadServerCertificate"
+                                        "iam:UploadServerCertificate",
+                                        "iam:GetServerCertificate"
                                     ],
                                     "Resource": "*"
                                 }
