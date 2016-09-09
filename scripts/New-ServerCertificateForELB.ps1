@@ -38,7 +38,7 @@ try {
         $bcCert.SetIssuerDN("CN=*.elb.amazonaws.com")
         $bcCert.SetNotAfter([DateTime]::Now.AddYears(5))
         $bcCert.SetNotBefore([DateTime]::Now.AddDays(-1))
-        $bcCert.SetSignatureAlgorithm("MD5WithRSA")
+        $bcCert.SetSignatureAlgorithm("SHA256WithRSA")
         $bcCert.SetPublicKey($keys.Public)
 
         $newCert = $bcCert.Generate($keys.Private)
