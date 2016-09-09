@@ -55,11 +55,11 @@
             "Description": "To include a demo application that will be used to build and deploy for testing.",
             "Type": "String"
         },
-        "ELBServerCertificiateName": {
+        "ELBServerCertificateName": {
             "AllowedPattern": "[-a-zA-Z0-9]*",
             "ConstraintDescription": "can only contain alphanumeric characters and dashes.",
             "Description": "This is the name of the certificate that will be created and used by the ELB for the web applications deployed to the build and test servers.",
-            "MaxLength": "16",
+            "MaxLength": "64",
             "MinLength": "1",
             "Type": "String"
         },
@@ -182,7 +182,7 @@
     "Mappings": {
         "Constants": {
             "InstanceValues": {
-                "CustomActionVersion": "12"
+                "CustomActionVersion": "14"
             }
         },
         "AWSAMIRegionMap": {
@@ -482,7 +482,8 @@
                                         "codepipeline:PollForJobs",
                                         "codepipeline:PutJobFailureResult",
                                         "codepipeline:PutJobSuccessResult",
-                                        "iam:UploadServerCertificate"
+                                        "iam:UploadServerCertificate",
+                                        "iam:GetServerCertificate"
                                     ],
                                     "Resource": "*"
                                 }
@@ -679,8 +680,29 @@
                                         ]
                                     ]
                                 },
-                                "arn:aws:s3:::tomfullershare/*",
-                                "arn:aws:s3:::tomfullershare"
+                                {
+                                    "Fn::Join": [
+                                        "",
+                                        [
+                                            "arn:aws:s3:::",
+                                            {
+                                                "Ref": "QSS3BucketName"
+                                            },
+                                            "/*"
+                                        ]
+                                    ]
+                                },
+                                {
+                                    "Fn::Join": [
+                                        "",
+                                        [
+                                            "arn:aws:s3:::",
+                                            {
+                                                "Ref": "QSS3BucketName"
+                                            }
+                                        ]
+                                    ]
+                                }
                             ],
                             "Effect": "Allow"
                         },
@@ -712,8 +734,29 @@
                                         ]
                                     ]
                                 },
-                                "arn:aws:s3:::tomfullershare/*",
-                                "arn:aws:s3:::tomfullershare"
+                                {
+                                    "Fn::Join": [
+                                        "",
+                                        [
+                                            "arn:aws:s3:::",
+                                            {
+                                                "Ref": "QSS3BucketName"
+                                            },
+                                            "/*"
+                                        ]
+                                    ]
+                                },
+                                {
+                                    "Fn::Join": [
+                                        "",
+                                        [
+                                            "arn:aws:s3:::",
+                                            {
+                                                "Ref": "QSS3BucketName"
+                                            }
+                                        ]
+                                    ]
+                                }
                             ],
                             "Effect": "Allow"
                         },
@@ -864,19 +907,129 @@
                     "config": {
                         "files": {
                             "C:\\cfn\\scripts\\Unzip-Archive.ps1": {
-                                "source": "https://s3.amazonaws.com/quickstart-reference/cicd/windows/latest/submodules/quickstart-microsoft-utilities/scripts/Unzip-Archive.ps1"
+                                "source": {
+                                    "Fn::Join": [
+                                        "/",
+                                        [
+                                            {
+                                                "Fn::FindInMap": [
+                                                    "AWSInfoRegionMap",
+                                                    {
+                                                        "Ref": "AWS::Region"
+                                                    },
+                                                    "QuickStartS3URL"
+                                                ]
+                                            },
+                                            {
+                                                "Ref": "QSS3BucketName"
+                                            },
+                                            {
+                                                "Ref": "QSS3KeyPrefix"
+                                            },
+                                            "submodules/quickstart-microsoft-utilities/scripts/Unzip-Archive.ps1"
+                                        ]
+                                    ]
+                                }
                             },
                             "C:\\cfn\\modules\\AWSQuickStart.zip": {
-                                "source": "https://s3.amazonaws.com/quickstart-reference/cicd/windows/latest/submodules/quickstart-microsoft-utilities/modules/AWSQuickStart.zip"
+                                "source": {
+                                    "Fn::Join": [
+                                        "/",
+                                        [
+                                            {
+                                                "Fn::FindInMap": [
+                                                    "AWSInfoRegionMap",
+                                                    {
+                                                        "Ref": "AWS::Region"
+                                                    },
+                                                    "QuickStartS3URL"
+                                                ]
+                                            },
+                                            {
+                                                "Ref": "QSS3BucketName"
+                                            },
+                                            {
+                                                "Ref": "QSS3KeyPrefix"
+                                            },
+                                            "submodules/quickstart-microsoft-utilities/modules/AWSQuickStart.zip"
+                                        ]
+                                    ]
+                                }
                             },
                             "c:\\cfn\\scripts\\Download-File.ps1": {
-                                "source": "https://s3.amazonaws.com/quickstart-reference/cicd/windows/latest/submodules/quickstart-microsoft-utilities/scripts/Download-File.ps1"
+                                "source": {
+                                    "Fn::Join": [
+                                        "/",
+                                        [
+                                            {
+                                                "Fn::FindInMap": [
+                                                    "AWSInfoRegionMap",
+                                                    {
+                                                        "Ref": "AWS::Region"
+                                                    },
+                                                    "QuickStartS3URL"
+                                                ]
+                                            },
+                                            {
+                                                "Ref": "QSS3BucketName"
+                                            },
+                                            {
+                                                "Ref": "QSS3KeyPrefix"
+                                            },
+                                            "submodules/quickstart-microsoft-utilities/scripts/Download-File.ps1"
+                                        ]
+                                    ]
+                                }
                             },
                             "c:\\cfn\\scripts\\Install-DotNetBuildServer-Jenkins.ps1": {
-                                "source": "https://s3.amazonaws.com/tomfullershare/Install-DotNetBuildServer-Jenkins.ps1"
+                                "source": {
+                                    "Fn::Join": [
+                                        "/",
+                                        [
+                                            {
+                                                "Fn::FindInMap": [
+                                                    "AWSInfoRegionMap",
+                                                    {
+                                                        "Ref": "AWS::Region"
+                                                    },
+                                                    "QuickStartS3URL"
+                                                ]
+                                            },
+                                            {
+                                                "Ref": "QSS3BucketName"
+                                            },
+                                            {
+                                                "Ref": "QSS3KeyPrefix"
+                                            },
+                                            "scripts/Install-DotNetBuildServer-Jenkins.ps1"
+                                        ]
+                                    ]
+                                }
                             },
                             "c:\\cfn\\scripts\\New-ServerCertificateForELB.ps1": {
-                                "source": "https://s3.amazonaws.com/tomfullershare/New-ServerCertificateForELB.ps1"
+                                "source": {
+                                    "Fn::Join": [
+                                        "/",
+                                        [
+                                            {
+                                                "Fn::FindInMap": [
+                                                    "AWSInfoRegionMap",
+                                                    {
+                                                        "Ref": "AWS::Region"
+                                                    },
+                                                    "QuickStartS3URL"
+                                                ]
+                                            },
+                                            {
+                                                "Ref": "QSS3BucketName"
+                                            },
+                                            {
+                                                "Ref": "QSS3KeyPrefix"
+                                            },
+                                            "scripts/New-ServerCertificateForELB.ps1"
+                                        ]
+                                    ]
+                                }
                             },
                             "c:\\cfn\\scripts\\create-jenkins-user.groovy": {
                                 "content": {
@@ -1152,20 +1305,24 @@
                                         [
                                             "powershell.exe -Command \"C:\\cfn\\scripts\\Download-File.ps1 -Source '",
                                             "https://www.bouncycastle.org/csharp/download/bccrypto-csharp-1.8.1-bin.zip",
-                                            "' -Destination 'C:\\cfn\\downloads\\BouncyCastle.Crypto.dll'\""
+                                            "' -Destination 'C:\\cfn\\downloads\\BouncyCastle.Crypto.zip'\""
                                         ]
                                     ]
                                 },
                                 "waitAfterCompletion": "0"
                             },
-                            "l-create-server-certificate-for-elb": {
+                            "l-unpack-bouncycastle": {
+                                "command": "powershell.exe -Command C:\\cfn\\scripts\\Unzip-Archive.ps1 -Source C:\\cfn\\downloads\\BouncyCastle.Crypto.zip -Destination C:\\cfn\\downloads\\",
+                                "waitAfterCompletion": "0"
+                            },
+                            "m-create-server-certificate-for-elb": {
                                 "command": {
                                     "Fn::Join": [
                                         "",
                                         [
                                             "powershell.exe -Command \"C:\\cfn\\Scripts\\New-ServerCertificateForELB.ps1 -ServerCertificateName '",
                                             {
-                                                "Ref": "ELBServerCertificiateName"
+                                                "Ref": "ELBServerCertificateName"
                                             },
                                             "'\""
                                         ]
@@ -1173,7 +1330,7 @@
                                 },
                                 "waitAfterCompletion": 0
                             },
-                            "m-signal-success": {
+                            "n-signal-success": {
                                 "command": "powershell.exe -Command \"Write-AWSQuickStartStatus\"",
                                 "waitAfterCompletion": 0
                             }
@@ -1248,16 +1405,104 @@
                     "config": {
                         "files": {
                             "C:\\cfn\\scripts\\Unzip-Archive.ps1": {
-                                "source": "https://s3.amazonaws.com/quickstart-reference/cicd/windows/latest/submodules/quickstart-microsoft-utilities/scripts/Unzip-Archive.ps1"
+                                "source": {
+                                    "Fn::Join": [
+                                        "/",
+                                        [
+                                            {
+                                                "Fn::FindInMap": [
+                                                    "AWSInfoRegionMap",
+                                                    {
+                                                        "Ref": "AWS::Region"
+                                                    },
+                                                    "QuickStartS3URL"
+                                                ]
+                                            },
+                                            {
+                                                "Ref": "QSS3BucketName"
+                                            },
+                                            {
+                                                "Ref": "QSS3KeyPrefix"
+                                            },
+                                            "submodules/quickstart-microsoft-utilities/scripts/Unzip-Archive.ps1"
+                                        ]
+                                    ]
+                                }
                             },
                             "C:\\cfn\\modules\\AWSQuickStart.zip": {
-                                "source": "https://s3.amazonaws.com/quickstart-reference/cicd/windows/latest/submodules/quickstart-microsoft-utilities/modules/AWSQuickStart.zip"
+                                "source": {
+                                    "Fn::Join": [
+                                        "/",
+                                        [
+                                            {
+                                                "Fn::FindInMap": [
+                                                    "AWSInfoRegionMap",
+                                                    {
+                                                        "Ref": "AWS::Region"
+                                                    },
+                                                    "QuickStartS3URL"
+                                                ]
+                                            },
+                                            {
+                                                "Ref": "QSS3BucketName"
+                                            },
+                                            {
+                                                "Ref": "QSS3KeyPrefix"
+                                            },
+                                            "submodules/quickstart-microsoft-utilities/modules/AWSQuickStart.zip"
+                                        ]
+                                    ]
+                                }
                             },
                             "c:\\cfn\\scripts\\Download-File.ps1": {
-                                "source": "https://s3.amazonaws.com/quickstart-reference/cicd/windows/latest/submodules/quickstart-microsoft-utilities/scripts/Download-File.ps1"
+                                "source": {
+                                    "Fn::Join": [
+                                        "/",
+                                        [
+                                            {
+                                                "Fn::FindInMap": [
+                                                    "AWSInfoRegionMap",
+                                                    {
+                                                        "Ref": "AWS::Region"
+                                                    },
+                                                    "QuickStartS3URL"
+                                                ]
+                                            },
+                                            {
+                                                "Ref": "QSS3BucketName"
+                                            },
+                                            {
+                                                "Ref": "QSS3KeyPrefix"
+                                            },
+                                            "submodules/quickstart-microsoft-utilities/scripts/Download-File.ps1"
+                                        ]
+                                    ]
+                                }
                             },
                             "c:\\cfn\\scripts\\Install-CodeDeploy.ps1": {
-                                "source": "https://s3.amazonaws.com/tomfullershare/Install-CodeDeploy.ps1"
+                                "source": {
+                                    "Fn::Join": [
+                                        "/",
+                                        [
+                                            {
+                                                "Fn::FindInMap": [
+                                                    "AWSInfoRegionMap",
+                                                    {
+                                                        "Ref": "AWS::Region"
+                                                    },
+                                                    "QuickStartS3URL"
+                                                ]
+                                            },
+                                            {
+                                                "Ref": "QSS3BucketName"
+                                            },
+                                            {
+                                                "Ref": "QSS3KeyPrefix"
+                                            },
+                                            "scripts/Install-CodeDeploy.ps1"
+                                        ]
+                                    ]
+                                }
                             }
                         },
                         "commands": {
@@ -1393,16 +1638,104 @@
                     "config": {
                         "files": {
                             "C:\\cfn\\scripts\\Unzip-Archive.ps1": {
-                                "source": "https://s3.amazonaws.com/quickstart-reference/cicd/windows/latest/submodules/quickstart-microsoft-utilities/scripts/Unzip-Archive.ps1"
+                                "source": {
+                                    "Fn::Join": [
+                                        "/",
+                                        [
+                                            {
+                                                "Fn::FindInMap": [
+                                                    "AWSInfoRegionMap",
+                                                    {
+                                                        "Ref": "AWS::Region"
+                                                    },
+                                                    "QuickStartS3URL"
+                                                ]
+                                            },
+                                            {
+                                                "Ref": "QSS3BucketName"
+                                            },
+                                            {
+                                                "Ref": "QSS3KeyPrefix"
+                                            },
+                                            "submodules/quickstart-microsoft-utilities/scripts/Unzip-Archive.ps1"
+                                        ]
+                                    ]
+                                }
                             },
                             "C:\\cfn\\modules\\AWSQuickStart.zip": {
-                                "source": "https://s3.amazonaws.com/quickstart-reference/cicd/windows/latest/submodules/quickstart-microsoft-utilities/modules/AWSQuickStart.zip"
+                                "source": {
+                                    "Fn::Join": [
+                                        "/",
+                                        [
+                                            {
+                                                "Fn::FindInMap": [
+                                                    "AWSInfoRegionMap",
+                                                    {
+                                                        "Ref": "AWS::Region"
+                                                    },
+                                                    "QuickStartS3URL"
+                                                ]
+                                            },
+                                            {
+                                                "Ref": "QSS3BucketName"
+                                            },
+                                            {
+                                                "Ref": "QSS3KeyPrefix"
+                                            },
+                                            "submodules/quickstart-microsoft-utilities/modules/AWSQuickStart.zip"
+                                        ]
+                                    ]
+                                }
                             },
                             "c:\\cfn\\scripts\\Download-File.ps1": {
-                                "source": "https://s3.amazonaws.com/quickstart-reference/cicd/windows/latest/submodules/quickstart-microsoft-utilities/scripts/Download-File.ps1"
+                                "source": {
+                                    "Fn::Join": [
+                                        "/",
+                                        [
+                                            {
+                                                "Fn::FindInMap": [
+                                                    "AWSInfoRegionMap",
+                                                    {
+                                                        "Ref": "AWS::Region"
+                                                    },
+                                                    "QuickStartS3URL"
+                                                ]
+                                            },
+                                            {
+                                                "Ref": "QSS3BucketName"
+                                            },
+                                            {
+                                                "Ref": "QSS3KeyPrefix"
+                                            },
+                                            "submodules/quickstart-microsoft-utilities/scripts/Download-File.ps1"
+                                        ]
+                                    ]
+                                }
                             },
                             "c:\\cfn\\scripts\\Install-CodeDeploy.ps1": {
-                                "source": "https://s3.amazonaws.com/tomfullershare/Install-CodeDeploy.ps1"
+                                "source": {
+                                    "Fn::Join": [
+                                        "/",
+                                        [
+                                            {
+                                                "Fn::FindInMap": [
+                                                    "AWSInfoRegionMap",
+                                                    {
+                                                        "Ref": "AWS::Region"
+                                                    },
+                                                    "QuickStartS3URL"
+                                                ]
+                                            },
+                                            {
+                                                "Ref": "QSS3BucketName"
+                                            },
+                                            {
+                                                "Ref": "QSS3KeyPrefix"
+                                            },
+                                            "scripts/Install-CodeDeploy.ps1"
+                                        ]
+                                    ]
+                                }
                             }
                         },
                         "commands": {
@@ -1779,8 +2112,16 @@
                                     }
                                 ],
                                 "Configuration": {
-                                    "S3Bucket": "tomfullershare",
-                                    "S3ObjectKey": "DemoApp.zip"
+                                    "S3Bucket": { "Ref" : "QSS3BucketName" },
+                                    "S3ObjectKey": {
+                                    	"Fn::Join": [
+	                                        "/",
+	                                        [
+	                                            {"Ref": "QSS3KeyPrefix"},
+	                                            "demo-assets/DemoApp.zip"
+	                                        ]
+	                                    ] 
+                                    }
                                 },
                                 "RunOrder": 1
                             }

@@ -92,37 +92,37 @@
                     "default": "Application name that will be used by CodeDeploy."
                 },
                 "CodeDeployDeploymentGroupName": {
-                    "default": "DeploymentGroup name that will be used by the CodeDeploy Application."
+                    "default": "DeploymentGroup name for CodeDeploy"
                 },
                 "CodeDeployNumberOfServers": {
-                    "default": "Choose the number of CodeDeploy test servers you want to deploy"
+                    "default": "Number of CodeDeploy test servers"
                 },
                 "DemoAppDBPassword": {
-                    "default": "Password for the user account that is used by the demo app"
+                    "default": "Password for demo app db"
                 },
                 "DemoAppDBUserName": {
-                    "default": "Username to login to the database server for the demo app"
+                    "default": "Username for demo app db"
                 },
                 "DemoAppInclude": {
-                    "default": "Choose whether or not you want to deploy the demo application"
+                    "default": "Deploy the demo application"
                 },
                 "DomainDNSName": {
                     "default": "Domain DNS Name"
                 },
                 "ELBServerCertificateName":{
-                    "default": "This is the name of the certificate that will be created and used by the ELB for the web applications deployed to the build and test servers."
+                    "default": "Certificate Name for ELBs"
                 }, 
                 "JenkinsPassword": {
-                    "default": "This is the password for the Jenkins user you created"
+                    "default": "This is the password for the Jenkins user"
                 },
                 "JenkinsUserName": {
-                    "default": "This user will be created in Jenkins so you can manage your Jenkins build jobs"
+                    "default": "Jenkins User"
                 },
                 "KeyPairName": {
                     "default": "Key Pair Name"
                 },
                 "MSBuildProjectOrSolutionFileName": {
-                    "default": "Inside of your SourceFolder there will be either a project or solution file that will describe how you want MSBuild to be run and potentially packaged and released to the ReleaseFolder"
+                    "default": ".NET Project or Solution FileName"
                 },
                 "NATInstanceType": {
                     "default": "NAT Instance Type"
@@ -164,10 +164,10 @@
                     "default": "Remote Desktop Gateway Instance Type"
                 },
                 "ReleaseFolder": {
-                    "default": "In order to package up your release you need to specify a folder where the binaries and config information can be zipped for CodeDeploy"
+                    "default": "Path to store release binaries"
                 },
                 "SourceFolder": {
-                    "default": "Inside of your code zip package you need to give the detailed path to the source code you want to build. *NOTE: You must include the root folder form the zip file in your path and use a backslash between folders."
+                    "default": "Path to Source Code inside Zip"
                 },
                 "VPCCIDR": {
                     "default": "VPC CIDR"
@@ -262,7 +262,7 @@
             "AllowedPattern": "[-a-zA-Z0-9]*",
             "ConstraintDescription": "can only contain alphanumeric characters and dashes.",
             "Description": "This is the name of the certificate that will be created and used by the ELB for the web applications deployed to the build and test servers.",
-            "MaxLength": "16",
+            "MaxLength": "64",
             "MinLength": "1",
             "Type": "String"
         },
