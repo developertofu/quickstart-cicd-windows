@@ -226,9 +226,9 @@
         "DemoAppDBPassword": {
             "AllowedPattern": "[!#$%^&*a-zA-Z0-9]*",
             "ConstraintDescription": "Minimum of 8 alphanumeric characters and any of the following special characters (!,#,$,%,^,&,*)",
-            "Description": "The database admin account password",
+            "Description": "The database admin account password. This is only required if you are deploying the Demo Application.",
             "MaxLength": "128",
-            "MinLength": "8",
+            "MinLength": "0",
             "NoEcho": "true",
             "Type": "String"
         },
@@ -236,9 +236,9 @@
             "AllowedPattern": "[a-zA-Z][a-zA-Z0-9]*",
             "ConstraintDescription": "must begin with a letter and contain only alphanumeric characters.",
             "Default": "awsuser",
-            "Description": "The database admin account username",
+            "Description": "The database admin account username. This is only required if you are deploying the Demo Application.",
             "MaxLength": "16",
-            "MinLength": "1",
+            "MinLength": "0",
             "Type": "String"
         },
         "DemoAppInclude": {
@@ -260,6 +260,7 @@
         },
         "ELBServerCertificateName": {
             "AllowedPattern": "[-a-zA-Z0-9]*",
+            "Default": "QuickStartCICDCert",
             "ConstraintDescription": "can only contain alphanumeric characters and dashes.",
             "Description": "This is the name of the certificate that will be created and used by the ELB for the web applications deployed to the build and test servers.",
             "MaxLength": "64",
@@ -288,7 +289,8 @@
             "Type": "AWS::EC2::KeyPair::KeyName"
         },
         "MSBuildProjectOrSolutionFileName": {
-            "Description": "We need the path inside of your code archive to the .proj or .sln file used to drive the MSBuild step in Jenkins.",
+            "Description": "We need the name of the .proj or .sln file used to drive the MSBuild step in Jenkins.",
+            "Default":"SoccerTeamWeb.csproj",
             "MaxLength": "100",
             "MinLength": "1",
             "Type": "String"
@@ -394,13 +396,15 @@
             ]
         },
         "ReleaseFolder": {
-            "Description": "This release folder can be used by the Jenkins job to only copy the binaries to the test server. All content copied into this folder will be zipped and shipped via CodeDeploy.",
+            "Description": "This release folder can be used by the Jenkins job to only copy the binaries to the test server. All content copied into this folder will be zipped and shipped via CodeDeploy. If this is left blank then the entire Jenkins workspace is copied including the source.",
+            "Default": "Release",
             "MaxLength": "100",
-            "MinLength": "1",
+            "MinLength": "0",
             "Type": "String"
         },
         "SourceFolder": {
             "Description": "This will be used to find the path to the source code to build after it is unzipped. *NOTE: You must include the root folder from the zip file in your path and use a backslash between folders.",
+            "Default": "DemoApp\\SoccerTeamWeb",
             "MaxLength": "100",
             "MinLength": "1",
             "Type": "String"
