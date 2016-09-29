@@ -187,7 +187,7 @@
     "Mappings": {
         "Constants": {
             "InstanceValues": {
-                "CustomActionVersion": "14"
+                "CustomActionVersion": "1"
             }
         },
         "AWSAMIRegionMap": {
@@ -842,64 +842,6 @@
                         "Ref": "CodePipelineTrustRole"
                     }
                 ]
-            }
-        },
-        "SourceCodeBucketPolicy": {
-            "Type": "AWS::S3::BucketPolicy",
-            "Properties": {
-                "Bucket": {
-                    "Ref": "SourceCodeBucket"
-                },
-                "PolicyDocument": {
-                    "Statement": [
-                        {
-                            "Sid": "DenyUnEncryptedObjectUploads",
-                            "Effect": "Deny",
-                            "Principal": "*",
-                            "Action": "s3:PutObject",
-                            "Resource": {
-                                "Fn::Join": [
-                                    "",
-                                    [
-                                        "arn:aws:s3:::",
-                                        {
-                                            "Ref": "SourceCodeBucket"
-                                        },
-                                        "/*"
-                                    ]
-                                ]
-                            },
-                            "Condition": {
-                                "StringNotEquals": {
-                                    "s3:x-amz-server-side-encryption": "aws:kms"
-                                }
-                            }
-                        },
-                        {
-                            "Sid": "DenyInsecureConnections",
-                            "Effect": "Deny",
-                            "Principal": "*",
-                            "Action": "s3:*",
-                            "Resource": {
-                                "Fn::Join": [
-                                    "",
-                                    [
-                                        "arn:aws:s3:::",
-                                        {
-                                            "Ref": "SourceCodeBucket"
-                                        },
-                                        "/*"
-                                    ]
-                                ]
-                            },
-                            "Condition": {
-                                "Bool": {
-                                    "aws:SecureTransport": false
-                                }
-                            }
-                        }
-                    ]
-                }
             }
         },
         "MSBuildWithJenkinsInstance": {
