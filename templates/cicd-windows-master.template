@@ -50,9 +50,11 @@
                         "CodeDeployAppName",
                         "CodeDeployDeploymentGroupName",
                         "CodeDeployNumberOfServers",
+                        "S3BucketForPipeline",
                         "DemoAppInclude",
                         "DemoAppDBUserName",
-                        "DemoAppDBPassword"
+                        "DemoAppDBPassword",
+                        "CodePackageFileName"
                     ]
                 },
                 {
@@ -60,6 +62,7 @@
                         "default": "Jenkins Build Configuration"
                     },
                     "Parameters": [
+                        "JenkinsCustomActionVersionNumber",
                         "ELBServerCertificateName",
                         "JenkinsUserName",
                         "JenkinsPassword",
@@ -89,13 +92,16 @@
                     "default": "Availability Zones"
                 },
                 "CodeDeployAppName": {
-                    "default": "Application name that will be used by CodeDeploy."
+                    "default": "Application name"
                 },
                 "CodeDeployDeploymentGroupName": {
-                    "default": "DeploymentGroup name for CodeDeploy"
+                    "default": "DeploymentGroup name"
                 },
                 "CodeDeployNumberOfServers": {
-                    "default": "Number of CodeDeploy test servers"
+                    "default": "Number of CodeDeploy servers"
+                },
+                "CodePackageFileName": {
+                    "default": "Code Package Filename"
                 },
                 "DemoAppDBPassword": {
                     "default": "Password for demo app db"
@@ -112,8 +118,11 @@
                 "ELBServerCertificateName":{
                     "default": "Certificate Name for ELBs"
                 }, 
+                "JenkinsCustomActionVersionNumber": {
+                    "default": "Jenkins Custom Action Version"
+                },
                 "JenkinsPassword": {
-                    "default": "This is the password for the Jenkins user"
+                    "default": "Password for the Jenkins user"
                 },
                 "JenkinsUserName": {
                     "default": "Jenkins User"
@@ -164,10 +173,13 @@
                     "default": "Remote Desktop Gateway Instance Type"
                 },
                 "ReleaseFolder": {
-                    "default": "Path to store release binaries"
+                    "default": "Release Folder"
+                },
+                "S3BucketForPipeline": {
+                    "default": "Bucket for Pipeline"
                 },
                 "SourceFolder": {
-                    "default": "Path to Source Code inside Zip"
+                    "default": "Path to Source Code"
                 },
                 "VPCCIDR": {
                     "default": "VPC CIDR"
@@ -223,6 +235,14 @@
             "Description": "Choose how many test servers you want to deploy with CodeDeploy.",
             "Type": "String"
         },
+        "CodePackageFilename": {
+            "AllowedPattern": "^[\\w,\\s-]+\\.zip$",
+            "ConstraintDescription": "must be alphanumeric with dashes(-) or underscores(_) and end with .zip",
+            "Description": "If you are bringing your own code package to deploy through the pipeline you must provide the package name that can be found in the S3 bucket. This must be a .zip file with .NET source code inside.",
+            "MaxLength": "50",
+            "MinLength": "0",
+            "Type": "String"
+        },
         "DemoAppDBPassword": {
             "AllowedPattern": "[!#$%^&*a-zA-Z0-9]*",
             "ConstraintDescription": "Minimum of 8 alphanumeric characters and any of the following special characters (!,#,$,%,^,&,*)",
@@ -264,6 +284,15 @@
             "ConstraintDescription": "can only contain alphanumeric characters and dashes.",
             "Description": "This is the name of the certificate that will be created and used by the ELB for the web applications deployed to the build and test servers.",
             "MaxLength": "64",
+            "MinLength": "1",
+            "Type": "String"
+        },
+        "JenkinsCustomActionVersionNumber": {
+            "AllowedPattern": "[0-9]*",
+            "ConstraintDescription": "must be a numeric between 1 and 999",
+            "Default": "1",
+            "Description": "The Custom Action that is created for CodePipeline needs to have the version incremented. The combination of the application name and version number must be unique even following a delete.",
+            "MaxLength": "3",
             "MinLength": "1",
             "Type": "String"
         },
@@ -337,14 +366,14 @@
         "QSS3BucketName": {
             "AllowedPattern": "^[0-9a-zA-Z]+([0-9a-zA-Z-]*[0-9a-zA-Z])*$",
             "ConstraintDescription": "Quick Start bucket name can include numbers, lowercase letters, uppercase letters, and hyphens (-). It cannot start or end with a hyphen (-).",
-            "Default": "quickstart-reference",
+            "Default": "tomfullershare",
             "Description": "S3 bucket name for the Quick Start assets. Quick Start bucket name can include numbers, lowercase letters, uppercase letters, and hyphens (-). It cannot start or end with a hyphen (-).",
             "Type": "String"
         },
         "QSS3KeyPrefix": {
             "AllowedPattern": "^[0-9a-zA-Z-]+(/[0-9a-zA-Z-]+)*$",
             "ConstraintDescription": "Quick Start key prefix can include numbers, lowercase letters, uppercase letters, hyphens (-), and forward slash (/). It cannot start or end with forward slash (/) because they are automatically appended.",
-            "Default": "cicd/windows/latest",
+            "Default": "quickstart-cicd-windows",
             "Description": "S3 key prefix for the Quick Start assets. Quick Start key prefix can include numbers, lowercase letters, uppercase letters, hyphens (-), and forward slash (/). It cannot start or end with forward slash (/) because they are automatically appended.",
             "Type": "String"
         },
@@ -401,6 +430,14 @@
             "MaxLength": "100",
             "MinLength": "0",
             "Type": "String"
+        },
+        "S3BucketForPipeline": {
+            "Description": "This bucket must be pre-created and have versioning enabled to allow the user to bring their own source code and allow CodePipeline to manage artifacts with the same bucket.",
+            "MaxLength": "63",
+            "MinLength": "3",
+            "Type": "String",
+            "AllowedPattern": "[-a-z0-9]+",
+            "ConstraintDescription": "The Bucket Name allows dashes(-) and lower case alphanumeric characters."
         },
         "SourceFolder": {
             "Description": "This will be used to find the path to the source code to build after it is unzipped. *NOTE: You must include the root folder from the zip file in your path and use a backslash between folders.",
@@ -664,6 +701,9 @@
                     "CodeDeployNumberOfServers": {
                         "Ref": "CodeDeployNumberOfServers"
                     },
+                    "CodePackageFilename": {
+                        "Ref": "CodePackageFilename"
+                    },
                     "DemoAppDBPassword": {
                         "Ref": "DemoAppDBPassword"
                     },
@@ -675,6 +715,9 @@
                     },
                     "ELBServerCertificateName": {
                         "Ref": "ELBServerCertificateName"
+                    },
+                    "JenkinsCustomActionVersionNumber": {
+                        "Ref": "JenkinsCustomActionVersionNumber"
                     },
                     "JenkinsPassword": {
                         "Ref": "JenkinsPassword"
@@ -726,6 +769,9 @@
                     },
                     "ReleaseFolder": {
                         "Ref": "ReleaseFolder"
+                    },
+                    "S3BucketForPipeline": {
+                        "Ref": "S3BucketForPipeline"
                     },
                     "SourceFolder": {
                         "Ref": "SourceFolder"

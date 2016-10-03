@@ -29,6 +29,14 @@
             "Description": "Choose how many test servers you want to deploy with CodeDeploy.",
             "Type": "String"
         },
+        "CodePackageFilename": {
+            "AllowedPattern": "^[\\w,\\s-]+\\.zip$",
+            "ConstraintDescription": "must be alphanumeric with dashes(-) or underscores(_) and end with .zip",
+            "Description": "If you are bringing your own code package to deploy through the pipeline you must provide the package name that can be found in the S3 bucket. This must be a .zip file with .NET source code inside.",
+            "MaxLength": "50",
+            "MinLength": "0",
+            "Type": "String"
+        },
         "DemoAppDBPassword": {
             "AllowedPattern": "[!#$%^&*a-zA-Z0-9]*",
             "ConstraintDescription": "Minimum of 8 alphanumeric characters and any of the following special characters (!,#,$,%,^,&,*)",
@@ -62,6 +70,15 @@
             "ConstraintDescription": "can only contain alphanumeric characters and dashes.",
             "Description": "This is the name of the certificate that will be created and used by the ELB for the web applications deployed to the build and test servers.",
             "MaxLength": "64",
+            "MinLength": "1",
+            "Type": "String"
+        },
+        "JenkinsCustomActionVersionNumber": {
+            "AllowedPattern": "[0-9]*",
+            "ConstraintDescription": "must be a numeric between 1 and 999",
+            "Default": "1",
+            "Description": "The Custom Action that is created for CodePipeline needs to have the version incremented. The combination of the application name and version number must be unique even following a delete.",
+            "MaxLength": "3",
             "MinLength": "1",
             "Type": "String"
         },
@@ -134,6 +151,14 @@
             "MinLength": "0",
             "Type": "String"
         },
+        "S3BucketForPipeline": {
+            "Description": "This bucket must be pre-created and have versioning enabled to allow the user to bring their own source code and allow CodePipeline to manage artifacts with the same bucket.",
+            "MaxLength": "63",
+            "MinLength": "3",
+            "Type": "String",
+            "AllowedPattern": "[-a-z0-9]+",
+            "ConstraintDescription": "The Bucket Name allows dashes(-) and lower case alphanumeric characters."
+        },
         "SourceFolder": {
             "Description": "This will be used to find the path to the source code to build after it is unzipped. *NOTE: You must include the root folder from the zip file in your path and use a backslash between folders.",
             "Default": "DemoApp\\SoccerTeamWeb",
@@ -185,14 +210,9 @@
         }
     },
     "Mappings": {
-        "Constants": {
-            "InstanceValues": {
-                "CustomActionVersion": "1"
-            }
-        },
         "AWSAMIRegionMap": {
             "AMI": {
-                "WS2012R2": "Windows_Server-2012-R2_RTM-English-64Bit-Base-2016.08.11"
+                "WS2012R2": "Windows_Server-2012-R2_RTM-English-64Bit-Base-2016.09.14"
             },
             "ap-northeast-1": {
                 "WS2012R2": "ami-7b62881a"
@@ -335,36 +355,6 @@
                 ]
             }
         },
-        "SourceCodeBucket": {
-            "DeletionPolicy": "Retain",
-            "Type": "AWS::S3::Bucket",
-            "Properties": {
-                "BucketName": {
-                    "Fn::Join": [
-                        "",
-                        [
-                            "quickstart-dotnet-ci-source-",
-                            {
-                                "Ref": "AWS::Region"
-                            },
-                            "-",
-                            {
-                                "Ref": "AWS::AccountId"
-                            }
-                        ]
-                    ]
-                },
-                "VersioningConfiguration": {
-                    "Status": "Enabled"
-                },
-                "Tags": [
-                    {
-                        "Key": "Name",
-                        "Value": "QuickStart-WindowsDotNet-Pipeline"
-                    }
-                ]
-            }
-        },
         "BuildServerSecurityGroup": {
             "Type": "AWS::EC2::SecurityGroup",
             "Properties": {
@@ -491,6 +481,26 @@
                                         "iam:GetServerCertificate"
                                     ],
                                     "Resource": "*"
+                                },
+                                {
+                                    "Effect": "Allow",
+                                    "Action": [
+                                       "s3:PutObject"
+                                    ],
+                                    "Resource": [
+                                      {
+                                       "Fn::Join": [
+                                          "",
+                                          [
+                                             "arn:aws:s3:::",
+                                             {
+                                                "Ref": "S3BucketForPipeline"
+                                             },
+                                             "/*"
+                                          ]
+                                       ]
+                                     }
+                                   ]
                                 }
                             ]
                         }
@@ -585,7 +595,7 @@
                                                 [
                                                     "arn:aws:s3:::",
                                                     {
-                                                        "Ref": "SourceCodeBucket"
+                                                        "Ref": "S3BucketForPipeline"
                                                     },
                                                     "/*"
                                                 ]
@@ -668,7 +678,7 @@
                                         [
                                             "arn:aws:s3:::",
                                             {
-                                                "Ref": "SourceCodeBucket"
+                                                "Ref": "S3BucketForPipeline"
                                             },
                                             "/*"
                                         ]
@@ -680,7 +690,7 @@
                                         [
                                             "arn:aws:s3:::",
                                             {
-                                                "Ref": "SourceCodeBucket"
+                                                "Ref": "S3BucketForPipeline"
                                             }
                                         ]
                                     ]
@@ -691,7 +701,7 @@
                                         [
                                             "arn:aws:s3:::",
                                             {
-                                                "Ref": "QSS3BucketName"
+                                                "Ref": "S3BucketForPipeline"
                                             },
                                             "/*"
                                         ]
@@ -703,7 +713,7 @@
                                         [
                                             "arn:aws:s3:::",
                                             {
-                                                "Ref": "QSS3BucketName"
+                                                "Ref": "S3BucketForPipeline"
                                             }
                                         ]
                                     ]
@@ -722,7 +732,7 @@
                                         [
                                             "arn:aws:s3:::",
                                             {
-                                                "Ref": "SourceCodeBucket"
+                                                "Ref": "S3BucketForPipeline"
                                             },
                                             "/*"
                                         ]
@@ -734,30 +744,7 @@
                                         [
                                             "arn:aws:s3:::",
                                             {
-                                                "Ref": "SourceCodeBucket"
-                                            }
-                                        ]
-                                    ]
-                                },
-                                {
-                                    "Fn::Join": [
-                                        "",
-                                        [
-                                            "arn:aws:s3:::",
-                                            {
-                                                "Ref": "QSS3BucketName"
-                                            },
-                                            "/*"
-                                        ]
-                                    ]
-                                },
-                                {
-                                    "Fn::Join": [
-                                        "",
-                                        [
-                                            "arn:aws:s3:::",
-                                            {
-                                                "Ref": "QSS3BucketName"
+                                                "Ref": "S3BucketForPipeline"
                                             }
                                         ]
                                     ]
@@ -844,11 +831,66 @@
                 ]
             }
         },
+        "S3BucketForPipelinePolicy": {
+            "Type": "AWS::S3::BucketPolicy",
+            "Properties": {
+                "Bucket": {
+                    "Ref": "S3BucketForPipeline"
+                },
+                "PolicyDocument": {
+                    "Statement": [
+                        {
+                            "Sid": "DenyUnEncryptedObjectUploads",
+                            "Effect": "Deny",
+                            "Principal": "*",
+                            "Action": "s3:PutObject",
+                            "Resource": {
+                                "Fn::Join": [
+                                    "",
+                                    [
+                                        "arn:aws:s3:::",
+                                        {
+                                            "Ref": "S3BucketForPipeline"
+                                        },
+                                        "/*"
+                                    ]
+                                ]
+                            },
+                            "Condition": {
+                                "StringNotEquals": {
+                                    "s3:x-amz-server-side-encryption": "aws:kms"
+                                }
+                            }
+                        },
+                        {
+                            "Sid": "DenyInsecureConnections",
+                            "Effect": "Deny",
+                            "Principal": "*",
+                            "Action": "s3:*",
+                            "Resource": {
+                                "Fn::Join": [
+                                    "",
+                                    [
+                                        "arn:aws:s3:::",
+                                        {
+                                            "Ref": "S3BucketForPipeline"
+                                        },
+                                        "/*"
+                                    ]
+                                ]
+                            },
+                            "Condition": {
+                                "Bool": {
+                                    "aws:SecureTransport": false
+                                }
+                            }
+                        }
+                    ]
+                }
+            }
+        },
         "MSBuildWithJenkinsInstance": {
             "Type": "AWS::EC2::Instance",
-            "DependsOn": [
-                "SourceCodeBucket"
-            ],
             "Metadata": {
                 "AWS::CloudFormation::Init": {
                     "config": {
@@ -903,7 +945,7 @@
                                     ]
                                 }
                             },
-                            "c:\\cfn\\scripts\\Download-File.ps1": {
+                            "C:\\cfn\\scripts\\Download-File.ps1": {
                                 "source": {
                                     "Fn::Join": [
                                         "/",
@@ -924,6 +966,31 @@
                                                 "Ref": "QSS3KeyPrefix"
                                             },
                                             "submodules/quickstart-microsoft-utilities/scripts/Download-File.ps1"
+                                        ]
+                                    ]
+                                }
+                            },
+                            "C:\\cfn\\scripts\\Upload-File.ps1": {
+                                "source": {
+                                    "Fn::Join": [
+                                        "/",
+                                        [
+                                            {
+                                                "Fn::FindInMap": [
+                                                    "AWSInfoRegionMap",
+                                                    {
+                                                        "Ref": "AWS::Region"
+                                                    },
+                                                    "QuickStartS3URL"
+                                                ]
+                                            },
+                                            {
+                                                "Ref": "QSS3BucketName"
+                                            },
+                                            {
+                                                "Ref": "QSS3KeyPrefix"
+                                            },
+                                            "scripts/Upload-File.ps1"
                                         ]
                                     ]
                                 }
@@ -974,6 +1041,31 @@
                                                 "Ref": "QSS3KeyPrefix"
                                             },
                                             "scripts/New-ServerCertificateForELB.ps1"
+                                        ]
+                                    ]
+                                }
+                            },
+                            "c:\\cfn\\downloads\\DemoApp.zip": {
+                                "source": {
+                                    "Fn::Join": [
+                                        "/",
+                                        [
+                                            {
+                                                "Fn::FindInMap": [
+                                                    "AWSInfoRegionMap",
+                                                    {
+                                                        "Ref": "AWS::Region"
+                                                    },
+                                                    "QuickStartS3URL"
+                                                ]
+                                            },
+                                            {
+                                                "Ref": "QSS3BucketName"
+                                            },
+                                            {
+                                                "Ref": "QSS3KeyPrefix"
+                                            },
+                                            "demo-assets/DemoApp.zip"
                                         ]
                                     ]
                                 }
@@ -1039,11 +1131,7 @@
                                             "-Jenkins</actionTypeProvider>",
                                             "<actionTypeVersion>",
                                             {
-                                                "Fn::FindInMap": [
-                                                    "Constants",
-                                                    "InstanceValues",
-                                                    "CustomActionVersion"
-                                                ]
+                                                "Ref": "JenkinsCustomActionVersionNumber"
                                             },
                                             "</actionTypeVersion>",
                                             "<region>",
@@ -1277,7 +1365,27 @@
                                 },
                                 "waitAfterCompletion": 0
                             },
-                            "n-signal-success": {
+                            "n-upload-demo-application-source": {
+                                "command":{
+                                    "Fn::If" : [
+                                        "DemoAppIncluded",
+                                        {
+                                            "Fn::Join": [
+                                                "",
+                                                [
+                                                    "powershell.exe -Command \"C:\\cfn\\Scripts\\Upload-File.ps1 -Source 'C:\\cfn\\downloads\\DemoApp.zip'",
+                                                    " -Destination 's3://",
+                                                    {
+                                                       "Ref": "S3BucketForPipeline"
+                                                    },
+                                                    "//DemoApp.zip'"
+                                                ]
+                                            ]
+                                        }
+                                    ]
+                                }
+                            },
+                            "o-signal-success": {
                                 "command": "powershell.exe -Command \"Write-AWSQuickStartStatus\"",
                                 "waitAfterCompletion": 0
                             }
@@ -1950,11 +2058,7 @@
                     ]
                 },
                 "Version": {
-                    "Fn::FindInMap": [
-                        "Constants",
-                        "InstanceValues",
-                        "CustomActionVersion"
-                    ]
+                    "Ref": "JenkinsCustomActionVersionNumber"
                 },
                 "ConfigurationProperties": [
                     {
@@ -2008,200 +2112,8 @@
                 }
             }
         },
-        "MyPipelineWithDemoApp": {
-            "Type": "AWS::CodePipeline::Pipeline",
-            "Condition": "DemoAppIncluded",
-            "DependsOn": "CustomJenkinsActionType",
-            "Properties": {
-                "Name": {
-                    "Fn::Join": [
-                        "",
-                        [
-                            {
-                                "Ref": "CodeDeployAppName"
-                            },
-                            "-Pipeline"
-                        ]
-                    ]
-                },
-                "RoleArn": {
-                    "Fn::GetAtt": [
-                        "CodePipelineTrustRole",
-                        "Arn"
-                    ]
-                },
-                "Stages": [
-                    {
-                        "Name": "Source",
-                        "Actions": [
-                            {
-                                "Name": "ApplicationSource",
-                                "InputArtifacts": [],
-                                "ActionTypeId": {
-                                    "Version": "1",
-                                    "Category": "Source",
-                                    "Owner": "AWS",
-                                    "Provider": "S3"
-                                },
-                                "OutputArtifacts": [
-                                    {
-                                        "Name": {
-                                            "Fn::Join": [
-                                                "",
-                                                [
-                                                    {
-                                                        "Ref": "CodeDeployAppName"
-                                                    },
-                                                    "-SourceArtifact"
-                                                ]
-                                            ]
-                                        }
-                                    }
-                                ],
-                                "Configuration": {
-                                    "S3Bucket": { "Ref" : "QSS3BucketName" },
-                                    "S3ObjectKey": {
-                                    	"Fn::Join": [
-	                                        "/",
-	                                        [
-	                                            {"Ref": "QSS3KeyPrefix"},
-	                                            "demo-assets/DemoApp.zip"
-	                                        ]
-	                                    ] 
-                                    }
-                                },
-                                "RunOrder": 1
-                            }
-                        ]
-                    },
-                    {
-                        "Name": "Build",
-                        "Actions": [
-                            {
-                                "Name": "ApplicationBuild",
-                                "InputArtifacts": [
-                                    {
-                                        "Name": {
-                                            "Fn::Join": [
-                                                "",
-                                                [
-                                                    {
-                                                        "Ref": "CodeDeployAppName"
-                                                    },
-                                                    "-SourceArtifact"
-                                                ]
-                                            ]
-                                        }
-                                    }
-                                ],
-                                "ActionTypeId": {
-                                    "Category": "Build",
-                                    "Owner": "Custom",
-                                    "Version": {
-                                        "Fn::FindInMap": [
-                                            "Constants",
-                                            "InstanceValues",
-                                            "CustomActionVersion"
-                                        ]
-                                    },
-                                    "Provider": {
-                                        "Fn::Join": [
-                                            "",
-                                            [
-                                                {
-                                                    "Ref": "CodeDeployAppName"
-                                                },
-                                                "-Jenkins"
-                                            ]
-                                        ]
-                                    }
-                                },
-                                "OutputArtifacts": [
-                                    {
-                                        "Name": {
-                                            "Fn::Join": [
-                                                "",
-                                                [
-                                                    {
-                                                        "Ref": "CodeDeployAppName"
-                                                    },
-                                                    "-BuiltArtifact"
-                                                ]
-                                            ]
-                                        }
-                                    }
-                                ],
-                                "Configuration": {
-                                    "ProjectName": {
-                                        "Ref": "CodeDeployAppName"
-                                    }
-                                },
-                                "RunOrder": 1
-                            }
-                        ]
-                    },
-                    {
-                        "Name": "Test",
-                        "Actions": [
-                            {
-                                "Name": "DeployToTest",
-                                "InputArtifacts": [
-                                    {
-                                        "Name": {
-                                            "Fn::Join": [
-                                                "",
-                                                [
-                                                    {
-                                                        "Ref": "CodeDeployAppName"
-                                                    },
-                                                    "-BuiltArtifact"
-                                                ]
-                                            ]
-                                        }
-                                    }
-                                ],
-                                "ActionTypeId": {
-                                    "Category": "Deploy",
-                                    "Owner": "AWS",
-                                    "Version": "1",
-                                    "Provider": "CodeDeploy"
-                                },
-                                "Configuration": {
-                                    "ApplicationName": {
-                                        "Ref": "CodeDeployAppName"
-                                    },
-                                    "DeploymentGroupName": {
-                                        "Ref": "CodeDeployDeploymentGroupName"
-                                    }
-                                },
-                                "RunOrder": 1
-                            }
-                        ]
-                    }
-                ],
-                "ArtifactStore": {
-                    "Type": "S3",
-                    "Location": {
-                        "Fn::Join": [
-                            "",
-                            [
-                                "quickstart-dotnet-ci-source-",
-                                {
-                                    "Ref": "AWS::Region"
-                                },
-                                "-",
-                                {
-                                    "Ref": "AWS::AccountId"
-                                }
-                            ]
-                        ]
-                    }
-                }
-            }
-        },
         "MyPipeline": {
             "Type": "AWS::CodePipeline::Pipeline",
-            "Condition": "DemoAppNotIncluded",
             "DependsOn": "CustomJenkinsActionType",
             "Properties": {
                 "Name": {
@@ -2251,18 +2163,16 @@
                                 ],
                                 "Configuration": {
                                     "S3Bucket": {
-                                        "Ref": "SourceCodeBucket"
+                                        "Ref": "S3BucketForPipeline"
                                     },
                                     "S3ObjectKey": {
-                                        "Fn::Join": [
-                                            "",
-                                            [
-                                                {
-                                                    "Ref": "CodeDeployAppName"
-                                                },
-                                                "-Source.zip"
-                                            ]
-                                        ]
+                                        "Fn::If":[
+                                            "DemoAppIncluded",
+                                            "DemoApp.zip",
+                                            {
+                                                "Ref": "CodePackageFilename" 
+                                            }
+                                        ] 
                                     }
                                 },
                                 "RunOrder": 1
@@ -2293,11 +2203,7 @@
                                     "Category": "Build",
                                     "Owner": "Custom",
                                     "Version": {
-                                        "Fn::FindInMap": [
-                                            "Constants",
-                                            "InstanceValues",
-                                            "CustomActionVersion"
-                                        ]
+                                        "Ref": "JenkinsCustomActionVersionNumber"
                                     },
                                     "Provider": {
                                         "Fn::Join": [
@@ -2430,12 +2336,6 @@
         }
     },
     "Outputs": {
-        "S3Bucket": {
-            "Value": {
-                "Ref": "SourceCodeBucket"
-            },
-            "Description": "S3 Bucket where the code is deployed from."
-        },
         "CodeDeployELBDNSName": {
             "Value": {
                 "Fn::GetAtt": [
