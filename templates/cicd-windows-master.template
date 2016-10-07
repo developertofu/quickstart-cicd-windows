@@ -700,8 +700,8 @@
                     "CodeDeployNumberOfServers": {
                         "Ref": "CodeDeployNumberOfServers"
                     },
-                    "CodePackageFilename": {
-                        "Ref": "CodePackageFilename"
+                    "CodePackageFileName": {
+                        "Ref": "CodePackageFileName"
                     },
                     "DemoAppDBPassword": {
                         "Ref": "DemoAppDBPassword"

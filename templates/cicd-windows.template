@@ -2170,7 +2170,7 @@
                                             "DemoAppIncluded",
                                             "DemoApp.zip",
                                             {
-                                                "Ref": "CodePackageFilename" 
+                                                "Ref": "CodePackageFileName" 
                                             }
                                         ] 
                                     }
