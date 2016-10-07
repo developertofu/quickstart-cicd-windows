@@ -241,6 +241,7 @@
             "Description": "If you are bringing your own code package to deploy through the pipeline you must provide the package name that can be found in the S3 bucket. This must be a .zip file with .NET source code inside.",
             "MaxLength": "50",
             "MinLength": "0",
+            "Default": "DemoApp-Source.zip",
             "Type": "String"
         },
         "DemoAppDBPassword": {
