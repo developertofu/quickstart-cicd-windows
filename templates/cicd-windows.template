@@ -29,7 +29,7 @@
             "Description": "Choose how many test servers you want to deploy with CodeDeploy.",
             "Type": "String"
         },
-        "CodePackageFilename": {
+        "CodePackageFileName": {
             "AllowedPattern": "^[\\w,\\s-]+\\.zip$",
             "ConstraintDescription": "must be alphanumeric with dashes(-) or underscores(_) and end with .zip",
             "Description": "If you are bringing your own code package to deploy through the pipeline you must provide the package name that can be found in the S3 bucket. This must be a .zip file with .NET source code inside.",
