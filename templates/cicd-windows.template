@@ -1922,7 +1922,7 @@
         },
         "CodeDeployTestingELB": {
             "Type": "AWS::ElasticLoadBalancing::LoadBalancer",
-            "DependsOn": "CodeDeployServerInstance",
+            "DependsOn": ["CodeDeployServerInstance","MSBuildWithJenkinsInstance"],
             "Properties": {
                 "Subnets": [
                     {
