@@ -240,7 +240,7 @@
                 "WS2012R2": "ami-0b6be167"
             },
             "us-east-1": {
-                "WS2012R2": "ami-79dc1b14"
+                "WS2012R2": "ami-ee7805f9"
             },
             "us-west-1": {
                 "WS2012R2": "ami-cface9af"
