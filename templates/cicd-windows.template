@@ -2284,20 +2284,8 @@
                 ],
                 "ArtifactStore": {
                     "Type": "S3",
-                    "Location": {
-                        "Fn::Join": [
-                            "",
-                            [
-                                "quickstart-dotnet-ci-source-",
-                                {
-                                    "Ref": "AWS::Region"
-                                },
-                                "-",
-                                {
-                                    "Ref": "AWS::AccountId"
-                                }
-                            ]
-                        ]
+                    "Location": { 
+                        "Ref": "S3BucketForPipeline"        
                     }
                 }
             }
