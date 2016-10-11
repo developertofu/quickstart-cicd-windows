@@ -4,7 +4,10 @@ param(
     [string]$Source,
 
     [Parameter(Mandatory=$true)]
-    [string]$Destination
+    [string]$Destination,
+
+    [Parameter(Mandatory=$true)]
+    [string]$ServerSideEncryptionMethod
 )
 
 function Get-S3BucketName {
@@ -30,6 +33,8 @@ function Get-S3Key {
 try {
     $ErrorActionPreference = "Stop"
 
+    Start-Transcript -Path c:\cfn\log\Upload-File.ps1.txt -Append
+
     $parentDir = Split-Path $Source -Parent
     if (-not (Test-Path $parentDir)) {
         New-Item -Path $parentDir -ItemType directory -Force | Out-Null
@@ -40,7 +45,7 @@ try {
         $tries = 5
         while ($tries -ge 1) {
             try {
-                Write-S3Object -BucketName (Get-S3BucketName -S3Uri $Destination) -Key (Get-S3Key -S3Uri $Destination) -File $Source -ErrorAction Stop
+                Write-S3Object -BucketName (Get-S3BucketName -S3Uri $Destination) -Key (Get-S3Key -S3Uri $Destination) -File $Source -ServerSideEncryption $ServerSideEncryptionMethod -ErrorAction Stop
                 break
             }
             catch {
@@ -61,5 +66,6 @@ try {
     }
 }
 catch {
+    Write-Verbose "$($_.exception.message)@ $(Get-Date)"
     $_ | Write-AWSQuickStartException
 }
