@@ -24,7 +24,7 @@ namespace SoccerTeamWeb
                 string datasource = Request["txtRDSInstance"].ToString();
                 string user = Request["txtUser"].ToString();
                 string password = Request["txtPassword"].ToString();
-                string connString = string.Format("Data Source={0}.rds.amazonaws.com;User ID={1};Password={2};", datasource, user, password);
+                string connString = string.Format("Data Source={0};User ID={1};Password={2};", datasource, user, password);
                 Conn = new SqlConnection(connString);
                 Conn.Open();
 
@@ -76,13 +76,13 @@ namespace SoccerTeamWeb
 
                     cmd = new SqlCommand(string.Format("INSERT INTO {0}.dbo.Players VALUES ('Katie',8,5,'Forward')",databaseName), Conn);
                     cmd.ExecuteNonQuery();
-                    cmd = new SqlCommand(string.Format("INSERT INTO {0}.dbo.Players VALUES ('Emma Grace', 8,9, 'Forward')", databaseName), Conn);
+                    cmd = new SqlCommand(string.Format("INSERT INTO {0}.dbo.Players VALUES ('Emma Grace', 9,9, 'Forward')", databaseName), Conn);
                     cmd.ExecuteNonQuery();
                     cmd = new SqlCommand(string.Format("INSERT INTO {0}.dbo.Players VALUES ('Maci',8,14,'Defense')", databaseName), Conn);
                     cmd.ExecuteNonQuery();
                     cmd = new SqlCommand(string.Format("INSERT INTO {0}.dbo.Players VALUES ('Libby',8,18,'Forward')", databaseName), Conn);
                     cmd.ExecuteNonQuery();
-                    cmd = new SqlCommand(string.Format("INSERT INTO {0}.dbo.Players VALUES ('Piper',9,1,'Goalie')", databaseName), Conn);
+                    cmd = new SqlCommand(string.Format("INSERT INTO {0}.dbo.Players VALUES ('Alyssa',6,1,'Forward')", databaseName), Conn);
                     cmd.ExecuteNonQuery();
                 }
             }
@@ -96,7 +96,7 @@ namespace SoccerTeamWeb
         {
             try
             {
-                string strSQL = string.Format("SELECT * from {0}.dbo.Players",databaseName);
+                string strSQL = string.Format("SELECT Name,Age,Goals,Position from {0}.dbo.Players",databaseName);
                 SqlCommand DBCmd = new SqlCommand(strSQL, Conn);
                 SqlDataReader myDataReader;
                 myDataReader = DBCmd.ExecuteReader();
