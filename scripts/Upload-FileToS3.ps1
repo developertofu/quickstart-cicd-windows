@@ -33,7 +33,7 @@ function Get-S3Key {
 try {
     $ErrorActionPreference = "Stop"
 
-    Start-Transcript -Path c:\cfn\log\Upload-File.ps1.txt -Append
+    Start-Transcript -Path c:\cfn\log\Upload-FileToS3.ps1.txt -Append
 
     $parentDir = Split-Path $Source -Parent
     if (-not (Test-Path $parentDir)) {

@@ -971,7 +971,7 @@
                                     ]
                                 }
                             },
-                            "C:\\cfn\\scripts\\Upload-File.ps1": {
+                            "C:\\cfn\\scripts\\Upload-FileToS3.ps1": {
                                 "source": {
                                     "Fn::Join": [
                                         "/",
@@ -991,7 +991,7 @@
                                             {
                                                 "Ref": "QSS3KeyPrefix"
                                             },
-                                            "scripts/Upload-File.ps1"
+                                            "scripts/Upload-FileToS3.ps1"
                                         ]
                                     ]
                                 }
@@ -1374,7 +1374,7 @@
                                             "Fn::Join": [
                                                 "",
                                                 [
-                                                    "powershell.exe -Command \"C:\\cfn\\Scripts\\Upload-File.ps1 -Source 'C:\\cfn\\downloads\\DemoApp.zip'",
+                                                    "powershell.exe -Command \"C:\\cfn\\Scripts\\Upload-FileToS3.ps1 -Source 'C:\\cfn\\downloads\\DemoApp.zip'",
                                                     " -Destination 's3://",
                                                     {
                                                        "Ref": "S3BucketForPipeline"
