@@ -243,10 +243,10 @@
                 "WS2012R2": "ami-ee7805f9"
             },
             "us-west-1": {
-                "WS2012R2": "ami-cface9af"
+                "WS2012R2": "ami-c06b24a0"
             },
             "us-west-2": {
-                "WS2012R2": "ami-8d0acfed"
+                "WS2012R2": "ami-2827f548"
             }
         },
         "AWSInfoRegionMap": {
