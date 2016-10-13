@@ -664,7 +664,7 @@
                 }
             }
         },
-        "WindowsBuildServerAndCodeDeployStack": {
+        "CICDStack": {
             "Type": "AWS::CloudFormation::Stack",
             "DependsOn": "RDGWStack",
             "Properties": {
