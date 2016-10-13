@@ -6,7 +6,7 @@ param(
     [Parameter(Mandatory=$true)]
     [string]$Destination,
 
-    [Parameter(Mandatory=$true)]
+    [Parameter(Mandatory=$false)]
     [string]$ServerSideEncryptionMethod
 )
 
@@ -45,7 +45,15 @@ try {
         $tries = 5
         while ($tries -ge 1) {
             try {
-                Write-S3Object -BucketName (Get-S3BucketName -S3Uri $Destination) -Key (Get-S3Key -S3Uri $Destination) -File $Source -ServerSideEncryption $ServerSideEncryptionMethod -ErrorAction Stop
+                $params =  @{
+                    BucketName = Get-S3BucketName -S3Uri $Destination
+                    Key = Get-S3Key -S3Uri $Destination
+                    File = $Source
+                }
+                if ($ServerSideEncryptionMethod) {
+                    $params.Add("ServerSideEncryption", $ServerSideEncryptionMethod)
+                }
+                Write-S3Object @params
                 break
             }
             catch {
