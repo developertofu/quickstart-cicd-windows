@@ -291,7 +291,6 @@
         "JenkinsCustomActionVersionNumber": {
             "AllowedPattern": "[0-9]*",
             "ConstraintDescription": "must be a numeric between 1 and 999",
-            "Default": "1",
             "Description": "The Custom Action that is created for CodePipeline needs to have the version incremented. The combination of the application name and version number must be unique even following a delete.",
             "MaxLength": "3",
             "MinLength": "1",
