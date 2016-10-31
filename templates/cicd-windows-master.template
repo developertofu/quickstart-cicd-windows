@@ -115,9 +115,9 @@
                 "DomainDNSName": {
                     "default": "Domain DNS Name"
                 },
-                "ELBServerCertificateName":{
+                "ELBServerCertificateName": {
                     "default": "Certificate Name for ELBs"
-                }, 
+                },
                 "JenkinsCustomActionVersionNumber": {
                     "default": "Jenkins Custom Action Version Number"
                 },
@@ -319,7 +319,7 @@
         },
         "MSBuildProjectOrSolutionFileName": {
             "Description": "We need the name of the .proj or .sln file used to drive the MSBuild step in Jenkins.",
-            "Default":"SoccerTeamWeb.csproj",
+            "Default": "SoccerTeamWeb.csproj",
             "MaxLength": "100",
             "MinLength": "1",
             "Type": "String"

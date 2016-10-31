@@ -105,7 +105,7 @@
         },
         "MSBuildProjectOrSolutionFileName": {
             "Description": "We need the name of the .proj or .sln file used to drive the MSBuild step in Jenkins.",
-            "Default":"SoccerTeamWeb.csproj",
+            "Default": "SoccerTeamWeb.csproj",
             "MaxLength": "100",
             "MinLength": "1",
             "Type": "String"
@@ -485,22 +485,22 @@
                                 {
                                     "Effect": "Allow",
                                     "Action": [
-                                       "s3:PutObject"
+                                        "s3:PutObject"
                                     ],
                                     "Resource": [
-                                      {
-                                       "Fn::Join": [
-                                          "",
-                                          [
-                                             "arn:aws:s3:::",
-                                             {
-                                                "Ref": "S3BucketForPipeline"
-                                             },
-                                             "/*"
-                                          ]
-                                       ]
-                                     }
-                                   ]
+                                        {
+                                            "Fn::Join": [
+                                                "",
+                                                [
+                                                    "arn:aws:s3:::",
+                                                    {
+                                                        "Ref": "S3BucketForPipeline"
+                                                    },
+                                                    "/*"
+                                                ]
+                                            ]
+                                        }
+                                    ]
                                 }
                             ]
                         }
@@ -1366,8 +1366,8 @@
                                 "waitAfterCompletion": 0
                             },
                             "n-upload-demo-application-source": {
-                                "command":{
-                                    "Fn::If" : [
+                                "command": {
+                                    "Fn::If": [
                                         "DemoAppIncluded",
                                         {
                                             "Fn::Join": [
@@ -1376,7 +1376,7 @@
                                                     "powershell.exe -Command \"C:\\cfn\\Scripts\\Upload-FileToS3.ps1 -Source 'C:\\cfn\\downloads\\DemoApp.zip'",
                                                     " -Destination 's3://",
                                                     {
-                                                       "Ref": "S3BucketForPipeline"
+                                                        "Ref": "S3BucketForPipeline"
                                                     },
                                                     "//DemoApp.zip' -ServerSideEncryptionMethod 'aws:kms'"
                                                 ]
@@ -1921,7 +1921,10 @@
         },
         "CodeDeployTestingELB": {
             "Type": "AWS::ElasticLoadBalancing::LoadBalancer",
-            "DependsOn": ["CodeDeployServerInstance","MSBuildWithJenkinsInstance"],
+            "DependsOn": [
+                "CodeDeployServerInstance",
+                "MSBuildWithJenkinsInstance"
+            ],
             "Properties": {
                 "Subnets": [
                     {
@@ -1957,20 +1960,20 @@
                         "Protocol": "HTTPS",
                         "InstanceProtocol": "HTTP",
                         "SSLCertificateId": {
-                          "Fn::Join": [
-                            "",
-                            [
-                               "arn:aws:iam::",
-                               {
-                                  "Ref": "AWS::AccountId"
-                               },
-                               ":server-certificate/",
-                               {
-                                  "Ref": "ELBServerCertificateName"
-                               }
-                             ]
-                           ]
-                        }      
+                            "Fn::Join": [
+                                "",
+                                [
+                                    "arn:aws:iam::",
+                                    {
+                                        "Ref": "AWS::AccountId"
+                                    },
+                                    ":server-certificate/",
+                                    {
+                                        "Ref": "ELBServerCertificateName"
+                                    }
+                                ]
+                            ]
+                        }
                     }
                 ],
                 "SecurityGroups": [
@@ -2012,20 +2015,20 @@
                         "Protocol": "HTTPS",
                         "InstanceProtocol": "HTTP",
                         "SSLCertificateId": {
-                          "Fn::Join": [
-                            "",
-                            [
-                               "arn:aws:iam::",
-                               {
-                                  "Ref": "AWS::AccountId"
-                               },
-                               ":server-certificate/",
-                               {
-                                  "Ref": "ELBServerCertificateName"
-                               }
-                             ]
-                           ]
-                        }      
+                            "Fn::Join": [
+                                "",
+                                [
+                                    "arn:aws:iam::",
+                                    {
+                                        "Ref": "AWS::AccountId"
+                                    },
+                                    ":server-certificate/",
+                                    {
+                                        "Ref": "ELBServerCertificateName"
+                                    }
+                                ]
+                            ]
+                        }
                     }
                 ],
                 "SecurityGroups": [
@@ -2167,13 +2170,13 @@
                                         "Ref": "S3BucketForPipeline"
                                     },
                                     "S3ObjectKey": {
-                                        "Fn::If":[
+                                        "Fn::If": [
                                             "DemoAppIncluded",
                                             "DemoApp.zip",
                                             {
-                                                "Ref": "CodePackageFileName" 
+                                                "Ref": "CodePackageFileName"
                                             }
-                                        ] 
+                                        ]
                                     }
                                 },
                                 "RunOrder": 1
@@ -2283,8 +2286,8 @@
                 ],
                 "ArtifactStore": {
                     "Type": "S3",
-                    "Location": { 
-                        "Ref": "S3BucketForPipeline"        
+                    "Location": {
+                        "Ref": "S3BucketForPipeline"
                     }
                 }
             }
