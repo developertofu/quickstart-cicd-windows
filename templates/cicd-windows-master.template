@@ -119,7 +119,7 @@
                     "default": "Certificate Name for ELBs"
                 }, 
                 "JenkinsCustomActionVersionNumber": {
-                    "default": "Jenkins Custom Action Version"
+                    "default": "Jenkins Custom Action Version Number"
                 },
                 "JenkinsPassword": {
                     "default": "Jenkins Password"
@@ -291,7 +291,7 @@
         "JenkinsCustomActionVersionNumber": {
             "AllowedPattern": "[0-9]*",
             "ConstraintDescription": "must be a numeric between 1 and 999",
-            "Description": "The Custom Action that is created for CodePipeline needs to have the version incremented. The combination of the application name and version number must be unique even following a delete.",
+            "Description": "The Custom Action that is created for CodePipeline needs to have the version nubmer incremented when you re-deploy. You can start with 1 but after you delete and recreate it you must change it. The combination of the application name and version number must be unique for your account even following a delete.",
             "MaxLength": "3",
             "MinLength": "1",
             "Type": "String"

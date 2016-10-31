@@ -106,7 +106,7 @@ namespace SoccerTeamWeb
                 {
                     Response.Write("<tr>");
                     Response.Write("<td align='center'>");
-                    if ((int)myDataReader["Goals"] >= 10)
+                    if ((int)myDataReader["Goals"] >= 5)
                     {
                         Response.Write("<img height='25' width='25' src='/star-icon.png' />");
                     }
