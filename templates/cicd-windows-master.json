@@ -13,7 +13,7 @@
     },
     {
         "ParameterKey": "CodeDeployAppName",
-        "ParameterValue": "$[alfred_genpass_22]"
+        "ParameterValue": "$[alfred_genpass_16]"
     },
     {
         "ParameterKey": "CodeDeployDeploymentGroupName",
