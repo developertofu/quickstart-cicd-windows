@@ -50,7 +50,6 @@
                         "CodeDeployAppName",
                         "CodeDeployDeploymentGroupName",
                         "CodeDeployNumberOfServers",
-                        "S3BucketForPipeline",
                         "DemoAppInclude",
                         "DemoAppDBUserName",
                         "DemoAppDBPassword",
@@ -175,9 +174,6 @@
                 "ReleaseFolder": {
                     "default": "Release Folder"
                 },
-                "S3BucketForPipeline": {
-                    "default": "Bucket for Pipeline"
-                },
                 "SourceFolder": {
                     "default": "Path to Source Code"
                 },
@@ -290,9 +286,9 @@
         },
         "JenkinsCustomActionVersionNumber": {
             "AllowedPattern": "[0-9]*",
-            "ConstraintDescription": "must be a numeric between 1 and 999",
+            "ConstraintDescription": "can only contain a numeric between 1 and 999999999.",
             "Description": "The Custom Action that is created for CodePipeline needs to have the version nubmer incremented when you re-deploy. You can start with 1 but after you delete and recreate it you must change it. The combination of the application name and version number must be unique for your account even following a delete.",
-            "MaxLength": "3",
+            "MaxLength": "9",
             "MinLength": "1",
             "Type": "String"
         },
@@ -429,14 +425,6 @@
             "MaxLength": "100",
             "MinLength": "0",
             "Type": "String"
-        },
-        "S3BucketForPipeline": {
-            "Description": "This bucket must be pre-created and have versioning enabled to allow the user to bring their own source code and allow CodePipeline to manage artifacts with the same bucket.",
-            "MaxLength": "63",
-            "MinLength": "3",
-            "Type": "String",
-            "AllowedPattern": "[-a-z0-9]+",
-            "ConstraintDescription": "The Bucket Name allows dashes(-) and lower case alphanumeric characters."
         },
         "SourceFolder": {
             "Description": "This will be used to find the path to the source code to build after it is unzipped. *NOTE: You must include the root folder from the zip file in your path and use a backslash between folders.",
@@ -768,9 +756,6 @@
                     },
                     "ReleaseFolder": {
                         "Ref": "ReleaseFolder"
-                    },
-                    "S3BucketForPipeline": {
-                        "Ref": "S3BucketForPipeline"
                     },
                     "SourceFolder": {
                         "Ref": "SourceFolder"
