@@ -37,7 +37,7 @@
     },
     {
         "ParameterKey": "DemoAppInclude",
-        "ParameterValue": "yes"
+        "ParameterValue": "true"
     },
     {
         "ParameterKey": "DomainDNSName",
