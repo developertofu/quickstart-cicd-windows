@@ -1,13 +1,18 @@
 [CmdletBinding()]
 param (
     [Parameter(Mandatory=$true)]
-    [string]$ServerCertificateName
+    [string]$ServerCertificateName,
+
+    [Parameter(Mandatory=$true)]
+    [string]$RegionForELB
 )
 
 try {
     $ErrorActionPreference = "Stop"
 
     Start-Transcript -Path c:\cfn\log\New-ServerCertificateForELB.ps1.txt -Append
+
+    $ServerCertificateName = $ServerCertificateName + "-" + $RegionForELB
 
     try{$certPreCheck = Get-IamServerCertificate -ServerCertificateName $ServerCertificateName}catch{}
     if(!$certPreCheck)
@@ -33,9 +38,11 @@ try {
 
         $random = New-Object System.Random
 
+        $elbDomainForCert = "CN=*." + $RegionForELB + ".elb.amazonaws.com"
+
         $bcCert.SetSerialNumber([Org.BouncyCastle.Math.BigInteger]::ProbablePrime(120,$random))
-        $bcCert.SetSubjectDN("CN=*.elb.amazonaws.com")
-        $bcCert.SetIssuerDN("CN=*.elb.amazonaws.com")
+        $bcCert.SetSubjectDN($elbDomainForCert)
+        $bcCert.SetIssuerDN($elbDomainForCert)
         $bcCert.SetNotAfter([DateTime]::Now.AddYears(5))
         $bcCert.SetNotBefore([DateTime]::Now.AddDays(-1))
         $bcCert.SetSignatureAlgorithm("SHA256WithRSA")
