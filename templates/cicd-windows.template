@@ -513,8 +513,8 @@
             "Condition": "DemoAppIncluded",
             "Properties": {
                 "AllocatedStorage": "50",
-                "DBInstanceClass": "db.m3.medium",
-                "Engine": "sqlserver-web",
+                "DBInstanceClass": "db.t2.micro",
+                "Engine": "sqlserver-ex",
                 "EngineVersion": "12.00.4422.0.v1",
                 "MultiAZ": "false",
                 "MasterUsername": {
