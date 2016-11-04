@@ -1,6 +1,6 @@
 {
     "AWSTemplateFormatVersion": "2010-09-09",
-    "Description": "This template will create a Windows build server that has MSBuild pre-installed and configures CodeDeploy deployments through S3 to 1 or more CodeDeploy servers. **WARNING** This template creates AWS resources. You will be billed for the AWS resources used if you create a stack.",
+    "Description": "This template will create a Windows build server that has MSBuild pre-installed and configures CodeDeploy deployments through S3 to 1 or more CodeDeploy servers. **WARNING** This template creates AWS resources. You will be billed for the AWS resources used if you create a stack. QS(0032)",
     "Metadata": {
         "AWS::CloudFormation::Interface": {
             "ParameterGroups": [
