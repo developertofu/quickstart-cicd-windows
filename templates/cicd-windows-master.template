@@ -243,7 +243,7 @@
         "DemoAppDBPassword": {
             "AllowedPattern": "[!#$%^&*a-zA-Z0-9]*",
             "ConstraintDescription": "Minimum of 8 alphanumeric characters and any of the following special characters (!,#,$,%,^,&,*)",
-            "Description": "The password for the database administrator account in the sample application. This parameter is necessary only if you choose to deploy the sample application. You'll use the credentials in step 4 to validate the deployment.",
+            "Description": "The password for the database administrator account in the sample application. This parameter is necessary only if you choose to deploy the sample application. You'll use the credentials to validate the deployment.",
             "MaxLength": "128",
             "MinLength": "0",
             "NoEcho": "true",
@@ -253,7 +253,7 @@
             "AllowedPattern": "[a-zA-Z][a-zA-Z0-9]*",
             "ConstraintDescription": "must begin with a letter and contain only alphanumeric characters.",
             "Default": "awsuser",
-            "Description": "The user name for the database administrator account in the sample application. This parameter is necessary only if you choose to deploy the sample application. You'll use the credentials in step 4 to validate the deployment.",
+            "Description": "The user name for the database administrator account in the sample application. This parameter is necessary only if you choose to deploy the sample application. You'll use the credentials to validate the deployment.",
             "MaxLength": "16",
             "MinLength": "0",
             "Type": "String"
@@ -294,7 +294,7 @@
         },
         "JenkinsPassword": {
             "ConstraintDescription": "Minimum of 8 characters",
-            "Description": "The password for the Jenkins user account you created. You'll use the credentials in step 4 to access the Jenkins dashboard.",
+            "Description": "The password for the Jenkins user account you created. You'll use the credentials to access the Jenkins dashboard.",
             "MaxLength": "41",
             "MinLength": "8",
             "NoEcho": "true",
@@ -304,7 +304,7 @@
             "AllowedPattern": "[a-zA-Z][a-zA-Z0-9]*",
             "ConstraintDescription": "must begin with a letter and contain only alphanumeric characters.",
             "Default": "JenkinsUser",
-            "Description": "The user account that should be given access to Jenkins to configure and run builds. You'll use the credentials in step 4 to access the Jenkins dashboard.",
+            "Description": "The user account that should be given access to Jenkins to configure and run builds. You'll use the credentials to access the Jenkins dashboard.",
             "MaxLength": "16",
             "MinLength": "1",
             "Type": "String"
