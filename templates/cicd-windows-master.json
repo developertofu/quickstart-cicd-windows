@@ -17,7 +17,7 @@
     },
     {
         "ParameterKey": "CodeDeployDeploymentGroupName",
-        "ParameterValue": "DemoApp-DG"
+        "ParameterValue": "$[alfred_genuuid]"
     },
     {
         "ParameterKey": "CodeDeployNumberOfServers",
