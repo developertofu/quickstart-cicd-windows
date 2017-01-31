@@ -1434,7 +1434,7 @@
                                         "",
                                         [
                                             "powershell.exe -Command \"C:\\cfn\\scripts\\Download-File.ps1 -Source '",
-                                            "http://mirrors.jenkins-ci.org/windows/latest",
+                                            "http://mirrors.jenkins-ci.org/windows-stable/latest",
                                             "' -Destination 'C:\\cfn\\downloads\\jenkins.zip'\""
                                         ]
                                     ]
